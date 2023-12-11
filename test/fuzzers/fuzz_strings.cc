@@ -73,7 +73,6 @@ public:
     platform->DrainTasks(isolate_);
     isolate_->Exit();
     platform->DisposeIsolate(isolate_);
-    isolate_ = nullptr;
   }
 };
 
@@ -131,4 +130,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   ffh.Teardown();
   return 0;
 }
-
