@@ -1090,6 +1090,53 @@
         }],
       ],
     }, # fuzz_ClientHelloParser.cc
+    { # fuzz_ParsePublicKey
+      'target_name': 'fuzz_ParsePublicKey',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'deps/openssl/openssl/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+	'NODE_OPENSSL_SYSTEM_CERT_PATH="missing/ca.pem"',
+	'FUZZ_CRYPTO_DIR=1',
+      ],
+      'sources': [
+        '<@(node_crypto_sources)',
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_ParsePublicKey.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_ParsePublicKey
     { # fuzz_strings
       'target_name': 'fuzz_strings',
       'type': 'executable',
