@@ -37,7 +37,7 @@ enum class ParseKeyResult {
   kParseKeyFailed =
       static_cast<int>(ncrypto::EVPKeyPointer::PKParseError::FAILED),
   kParseKeyOk,
-};
+];
 
 // Objects of this class can safely be shared among threads.
 class KeyObjectData final : public MemoryRetainer {
