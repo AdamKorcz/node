@@ -555,6 +555,16 @@ Maybe<bool> GetAsymmetricKeyDetail(
 }
 }  // namespace
 
+#ifdef FUZZ_CRYPTO_DIR
+ParseKeyResult ManagedEVPPKey::FuzzParsePublicKeyPEM(EVPKeyPointer* pkey,
+                                 const char* key_pem,
+                                 size_t key_pem_len) {
+  /*EVPKeyPointer* pkey2 = pkey;
+  const char* data = key_pem;*/
+  return ParsePublicKeyPEM(pkey, key_pem, (int)key_pem_len);
+}
+#endif  // FUZZ_CRYPTO_DIR
+
 ManagedEVPPKey::ManagedEVPPKey(EVPKeyPointer&& pkey) : pkey_(std::move(pkey)),
     mutex_(std::make_shared<Mutex>()) {}
 

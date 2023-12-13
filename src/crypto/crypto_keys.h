@@ -119,6 +119,13 @@ class ManagedEVPPKey : public MemoryRetainer {
   v8::Maybe<bool> ToEncodedPrivateKey(Environment* env,
                                       const PrivateKeyEncodingConfig& config,
                                       v8::Local<v8::Value>* out);
+  
+
+#ifdef FUZZ_CRYPTO_DIR
+  ParseKeyResult FuzzParsePublicKeyPEM(EVPKeyPointer* pkey,
+                                 const char* key_pem,
+                                 size_t key_pem_len);
+#endif // FUZZ_CRYPTO_DIR
 
  private:
   size_t size_of_private_key() const;
