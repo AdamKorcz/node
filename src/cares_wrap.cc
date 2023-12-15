@@ -1977,6 +1977,15 @@ void RegisterExternalReferences(ExternalReferenceRegistry* registry) {
   registry->Register(Cancel);
 }
 
+
+int FuzzParseSrvReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseSrvReply(env, buf, len, ret, false);
+}
+
 }  // namespace cares_wrap
 }  // namespace node
 
