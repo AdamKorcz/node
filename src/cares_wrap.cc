@@ -1986,6 +1986,22 @@ int FuzzParseSrvReply(
 	return ParseSrvReply(env, buf, len, ret, false);
 }
 
+int FuzzParseNaptrReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseNaptrReply(env, buf, len, ret, false);
+}
+
+int FuzzParseSoaReply(
+    Environment* env,
+    unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseNaptrReply(env, buf, len, ret, false);
+}
+
 }  // namespace cares_wrap
 }  // namespace node
 
