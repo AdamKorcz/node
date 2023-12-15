@@ -71,6 +71,13 @@ inline const char* ToErrorCodeString(int status) {
   return "UNKNOWN_ARES_ERROR";
 }
 
+
+int FuzzParseSrvReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<v8::Array> ret);
+
 inline void cares_wrap_hostent_cpy(
     struct hostent* dest,
     const struct hostent* src) {
