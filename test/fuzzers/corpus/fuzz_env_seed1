@@ -1,0 +1,18 @@
+const assert = require('assert');
+const path = require('path');
+const relativeRequire = 
+  require('module').createRequire(path.join(process.cwd(), 'stub.js'));
+const { intrinsics, nodeGlobals } = 
+  relativeRequire('./test/common/globals');
+const items = Object.getOwnPropertyNames(globalThis);
+const leaks = [];
+for (const item of items) {
+  if (intrinsics.has(item)) {
+    continue;
+  }
+  if (nodeGlobals.has(item)) {
+    continue;
+  }
+  leaks.push(item);
+}
+assert.deepStrictEqual(leaks, []);
