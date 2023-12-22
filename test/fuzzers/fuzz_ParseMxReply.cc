@@ -103,11 +103,10 @@ void EnvTest(v8::Isolate* isolate_, char* env_string, size_t len) {
     node::Stop(envi);
   });
   node::LoadEnvironment(envi, "");
-  unsigned char* p = reinterpret_cast<unsigned char*>(env_string);
+  const unsigned char* p = reinterpret_cast<const unsigned char*>(env_string);
 
-  //v8::Local<v8::Object> srv_records = v8::Object::New(isolate);
-  v8::Local<v8::Object> soa_record = v8::Local<v8::Object>();
-  int status = node::cares_wrap::FuzzParseSoaReply(envi, p, (int)len, &soa_record);
+  v8::Local<v8::Array> srv_records = Array::New(envi->isolate());
+  int status = node::cares_wrap::FuzzParseMxReply(envi, p, (int)len, srv_records);
   
   // Cleanup!
   node::FreeEnvironment(environment_);

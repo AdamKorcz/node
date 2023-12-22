@@ -8,6 +8,7 @@
 #include "node.h"
 #include "node_platform.h"
 #include "node_internals.h"
+#include "ares_nameser.h"
 #include "crypto/crypto_bio.h"
 #include "crypto/crypto_context.h"
 #include "cares_wrap.h"
@@ -104,10 +105,10 @@ void EnvTest(v8::Isolate* isolate_, char* env_string, size_t len) {
   });
   node::LoadEnvironment(envi, "");
   unsigned char* p = reinterpret_cast<unsigned char*>(env_string);
+  int type = node::cares_wrap::ns_t_cname_or_a;
 
-  //v8::Local<v8::Object> srv_records = v8::Object::New(isolate);
-  v8::Local<v8::Object> soa_record = v8::Local<v8::Object>();
-  int status = node::cares_wrap::FuzzParseSoaReply(envi, p, (int)len, &soa_record);
+  v8::Local<v8::Array> srv_records = Array::New(envi->isolate());
+  int status = node::cares_wrap::FuzzParseGeneralReply(envi, p, (int)len, &type, srv_records);
   
   // Cleanup!
   node::FreeEnvironment(environment_);
