@@ -88,6 +88,31 @@ int FuzzParseSoaReply(
     Environment* env,
     unsigned char* buf,
     int len,
+    v8::Local<v8::Object>* ret);
+
+int FuzzParseGeneralReply(
+    Environment* env,
+    unsigned char* buf,
+    int len,
+    int* type,
+    v8::Local<v8::Array> ret);
+
+int FuzzParseMxReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<v8::Array> ret);
+
+int FuzzParseCaaReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<v8::Array> ret);
+
+int FuzzParseTxtReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
     v8::Local<v8::Array> ret);
 
 inline void cares_wrap_hostent_cpy(

@@ -1986,6 +1986,30 @@ int FuzzParseSrvReply(
 	return ParseSrvReply(env, buf, len, ret, false);
 }
 
+int FuzzParseMxReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseMxReply(env, buf, len, ret, false);
+}
+
+int FuzzParseCaaReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseCaaReply(env, buf, len, ret, false);
+}
+
+int FuzzParseTxtReply(
+    Environment* env,
+    const unsigned char* buf,
+    int len,
+    v8::Local<Array> ret) {
+	return ParseTxtReply(env, buf, len, ret, false);
+}
+
 int FuzzParseNaptrReply(
     Environment* env,
     const unsigned char* buf,
@@ -1998,8 +2022,17 @@ int FuzzParseSoaReply(
     Environment* env,
     unsigned char* buf,
     int len,
+    v8::Local<v8::Object>* ret) {
+	return ParseSoaReply(env, buf, len, ret);
+}
+
+int FuzzParseGeneralReply(
+    Environment* env,
+    unsigned char* buf,
+    int len,
+    int* type,
     v8::Local<Array> ret) {
-	return ParseNaptrReply(env, buf, len, ret, false);
+	return ParseGeneralReply(env, buf, len, type, ret);
 }
 
 }  // namespace cares_wrap
