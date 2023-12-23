@@ -1546,6 +1546,7 @@
         'NODE_ARCH="<(target_arch)"',
         'NODE_PLATFORM="<(OS)"',
         'NODE_WANT_INTERNALS=1',
+        'NAPI_EXPERIMENTAL=1',
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
