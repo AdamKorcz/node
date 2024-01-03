@@ -1,0 +1,7 @@
+const {
+  hkdfSync,
+} = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const derivedKey = hkdfSync('sha512', 'key', 'salt', 'info', 64);
+console.log(Buffer.from(derivedKey).toString('hex'));

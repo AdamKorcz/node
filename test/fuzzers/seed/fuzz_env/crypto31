@@ -1,0 +1,21 @@
+const {
+  createReadStream,
+} = require('node:fs');
+const {
+  createHash,
+} = require('node:crypto');
+const { argv } = require('node:process');
+
+const filename = argv[2];
+
+const hash = createHash('sha256');
+
+const input = createReadStream(filename);
+input.on('readable', () => {
+  const data = input.read();
+  if (data)
+    hash.update(data);
+  else {
+    console.log(`${hash.digest('hex')} ${filename}`);
+  }
+});

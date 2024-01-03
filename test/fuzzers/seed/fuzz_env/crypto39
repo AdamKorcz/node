@@ -1,0 +1,9 @@
+const {
+  hkdf,
+} = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+hkdf('sha512', 'key', 'salt', 'info', 64, (err, derivedKey) => {
+  if (err) throw err;
+  console.log(Buffer.from(derivedKey).toString('hex')); 
+});

@@ -1,0 +1,7 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.from('buffer');
+
+for (const pair of buf.entries()) {
+  console.log(pair);
+}

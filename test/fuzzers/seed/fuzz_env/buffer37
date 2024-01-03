@@ -1,0 +1,4 @@
+const { Buffer } = require('node:buffer');
+const buf = Buffer.from([0, 5]);
+console.log(buf.readInt16LE(0));
+console.log(buf.readInt16LE(1));

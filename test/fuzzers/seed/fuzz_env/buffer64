@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.allocUnsafe(8);
+
+buf.writeBigUInt64LE(0xdecafafecacefaden, 0);

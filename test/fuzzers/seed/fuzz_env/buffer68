@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.allocUnsafe(4);
+
+buf.writeFloatLE(0xcafebabe, 0);

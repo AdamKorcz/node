@@ -1,0 +1,8 @@
+const { createReadStream } = require('node:fs');
+const { createHash } = require('node:crypto');
+const { stdout } = require('node:process');
+
+const hash = createHash('sha256');
+
+const input = createReadStream('test.js');
+input.pipe(hash).setEncoding('hex').pipe(stdout);

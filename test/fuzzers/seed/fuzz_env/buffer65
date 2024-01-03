@@ -1,0 +1,6 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.allocUnsafe(8);
+
+buf.writeDoubleBE(123.456, 0);
+

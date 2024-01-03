@@ -1,0 +1,34 @@
+const zlib = require('node:zlib');
+const http = require('node:http');
+const fs = require('node:fs');
+const { pipeline } = require('node:stream');
+
+http.createServer((request, response) => {
+  const raw = fs.createReadStream('index.html');
+  response.setHeader('Vary', 'Accept-Encoding');
+  let acceptEncoding = request.headers['accept-encoding'];
+  if (!acceptEncoding) {
+    acceptEncoding = '';
+  }
+
+  const onError = (err) => {
+    if (err) {
+      response.end();
+      console.error('An error occurred:', err);
+    }
+  };
+
+  if (/\bdeflate\b/.test(acceptEncoding)) {
+    response.writeHead(200, { 'Content-Encoding': 'deflate' });
+    pipeline(raw, zlib.createDeflate(), response, onError);
+  } else if (/\bgzip\b/.test(acceptEncoding)) {
+    response.writeHead(200, { 'Content-Encoding': 'gzip' });
+    pipeline(raw, zlib.createGzip(), response, onError);
+  } else if (/\bbr\b/.test(acceptEncoding)) {
+    response.writeHead(200, { 'Content-Encoding': 'br' });
+    pipeline(raw, zlib.createBrotliCompress(), response, onError);
+  } else {
+    response.writeHead(200, {});
+    pipeline(raw, response, onError);
+  }
+}).listen(1337); 

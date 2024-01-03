@@ -1,0 +1,33 @@
+const {
+  createReadStream,
+  createWriteStream,
+} = require('node:fs');
+
+const {
+  pipeline,
+} = require('node:stream');
+
+const {
+  scrypt,
+  randomFill,
+  createCipheriv,
+} = require('node:crypto');
+
+const algorithm = 'aes-192-cbc';
+const password = 'Password used to generate key';
+
+scrypt(password, 'salt', 24, (err, key) => {
+  if (err) throw err;
+  randomFill(new Uint8Array(16), (err, iv) => {
+    if (err) throw err;
+
+    const cipher = createCipheriv(algorithm, key, iv);
+
+    const input = createReadStream('test.js');
+    const output = createWriteStream('test.enc');
+
+    pipeline(input, cipher, output, (err) => {
+      if (err) throw err;
+    });
+  });
+});
