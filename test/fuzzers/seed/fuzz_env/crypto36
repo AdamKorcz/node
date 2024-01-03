@@ -1,0 +1,6 @@
+const {
+  generateKeySync,
+} = require('node:crypto');
+
+const key = generateKeySync('hmac', { length: 512 });
+console.log(key.export().toString('hex'));

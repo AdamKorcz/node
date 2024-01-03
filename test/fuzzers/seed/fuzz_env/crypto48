@@ -1,0 +1,22 @@
+const { randomFill } = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const a = new Uint32Array(10);
+randomFill(a, (err, buf) => {
+  if (err) throw err;
+  console.log(Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength)
+    .toString('hex'));
+});
+
+const b = new DataView(new ArrayBuffer(10));
+randomFill(b, (err, buf) => {
+  if (err) throw err;
+  console.log(Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength)
+    .toString('hex'));
+});
+
+const c = new ArrayBuffer(10);
+randomFill(c, (err, buf) => {
+  if (err) throw err;
+  console.log(Buffer.from(buf).toString('hex'));
+});

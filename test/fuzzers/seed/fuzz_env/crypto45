@@ -1,0 +1,11 @@
+const { randomFillSync } = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.alloc(10);
+console.log(randomFillSync(buf).toString('hex'));
+
+randomFillSync(buf, 5);
+console.log(buf.toString('hex'));
+
+randomFillSync(buf, 5, 5);
+console.log(buf.toString('hex'));

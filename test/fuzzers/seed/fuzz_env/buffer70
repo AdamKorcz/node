@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.allocUnsafe(2);
+
+buf.writeInt16BE(0x0102, 0);

@@ -1,0 +1,5 @@
+const { Certificate } = require('node:crypto');
+const cert = Certificate();
+const spkac = getSpkacSomehow();
+const publicKey = cert.exportPublicKey(spkac);
+console.log(publicKey);

@@ -1,0 +1,9 @@
+const { Buffer } = require('node:buffer');
+
+class Foo {
+  [Symbol.toPrimitive]() {
+    return 'this is a test';
+  }
+}
+
+const buf = Buffer.from(new Foo(), 'utf8');

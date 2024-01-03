@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+const b = Buffer.allocUnsafe(50).fill('h');
+console.log(b.toString());
+const c = Buffer.allocUnsafe(5).fill('');
+console.log(c.fill(''));

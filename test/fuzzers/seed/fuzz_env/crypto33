@@ -1,0 +1,8 @@
+const {
+  generateKey,
+} = require('node:crypto');
+
+generateKey('hmac', { length: 512 }, (err, key) => {
+  if (err) throw err;
+  console.log(key.export().toString('hex'));  // 46e..........620
+});

@@ -1,0 +1,4 @@
+const { Buffer, transcode } = require('node:buffer');
+
+const newBuf = transcode(Buffer.from('€'), 'utf8', 'ascii');
+console.log(newBuf.toString('ascii'));

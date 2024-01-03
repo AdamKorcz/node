@@ -1,0 +1,13 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.from('this is a buffer');
+
+console.log(buf.indexOf('this'));
+console.log(buf.indexOf('is'));
+console.log(buf.indexOf(Buffer.from('a buffer')));
+console.log(buf.indexOf(97));
+console.log(buf.indexOf(Buffer.from('a buffer example')));
+console.log(buf.indexOf(Buffer.from('a buffer example').slice(0, 8)));
+const utf16Buffer = Buffer.from('\u039a\u0391\u03a3\u03a3\u0395', 'utf16le');
+console.log(utf16Buffer.indexOf('\u03a3', 0, 'utf16le'));
+console.log(utf16Buffer.indexOf('\u03a3', -4, 'utf16le'));

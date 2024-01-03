@@ -1,0 +1,4 @@
+const { Buffer } = require('node:buffer');
+Buffer.from('1ag123', 'hex');
+Buffer.from('1a7', 'hex');
+Buffer.from('1634', 'hex');

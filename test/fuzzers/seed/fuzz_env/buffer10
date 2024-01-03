@@ -1,0 +1,8 @@
+const { Buffer } = require('node:buffer');
+
+const arrA = Uint8Array.from([0x63, 0x64, 0x65, 0x66]); // 4 elements
+const arrB = new Uint8Array(arrA.buffer, 1, 2); // 2 elements
+console.log(arrA.buffer === arrB.buffer); // true
+
+const buf = Buffer.from(arrB.buffer);
+console.log(buf);
