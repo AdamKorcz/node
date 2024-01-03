@@ -1,0 +1,12 @@
+const {
+  scrypt,
+} = require('node:crypto');
+
+scrypt('password', 'salt', 64, (err, derivedKey) => {
+  if (err) throw err;
+  console.log(derivedKey.toString('hex'));
+});
+scrypt('password', 'salt', 64, { N: 1024 }, (err, derivedKey) => {
+  if (err) throw err;
+  console.log(derivedKey.toString('hex'));
+});

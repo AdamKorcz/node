@@ -1,0 +1,19 @@
+const { randomFill } = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.alloc(10);
+randomFill(buf, (err, buf) => {
+  if (err) throw err;
+  console.log(buf.toString('hex'));
+});
+
+randomFill(buf, 5, (err, buf) => {
+  if (err) throw err;
+  console.log(buf.toString('hex'));
+});
+
+// The above is equivalent to the following:
+randomFill(buf, 5, 5, (err, buf) => {
+  if (err) throw err;
+  console.log(buf.toString('hex'));
+});

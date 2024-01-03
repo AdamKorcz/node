@@ -1,0 +1,8 @@
+const {
+  scryptSync,
+} = require('node:crypto');
+
+const key1 = scryptSync('password', 'salt', 64);
+console.log(key1.toString('hex'));
+const key2 = scryptSync('password', 'salt', 64, { N: 1024 });
+console.log(key2.toString('hex'));

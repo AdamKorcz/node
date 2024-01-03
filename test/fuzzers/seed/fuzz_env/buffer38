@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.from([0, 0, 0, 5]);
+
+console.log(buf.readInt32BE(0));

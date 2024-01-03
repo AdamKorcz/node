@@ -1,0 +1,12 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.from('buffer');
+
+const copiedBuf = Uint8Array.prototype.slice.call(buf);
+copiedBuf[0]++;
+console.log(copiedBuf.toString());
+console.log(buf.toString());
+const notReallyCopiedBuf = buf.slice();
+notReallyCopiedBuf[0]++;
+console.log(notReallyCopiedBuf.toString());
+console.log(buf.toString());

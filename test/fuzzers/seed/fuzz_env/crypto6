@@ -1,0 +1,5 @@
+const { Buffer } = require('node:buffer');
+const { Certificate } = require('node:crypto');
+
+const spkac = getSpkacSomehow();
+console.log(Certificate.verifySpkac(Buffer.from(spkac)));

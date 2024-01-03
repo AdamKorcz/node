@@ -1,0 +1,4 @@
+const { Certificate } = require('node:crypto');
+
+const cert1 = new Certificate();
+const cert2 = Certificate();

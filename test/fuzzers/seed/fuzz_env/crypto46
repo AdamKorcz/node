@@ -1,0 +1,13 @@
+const { randomFillSync } = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const a = new Uint32Array(10);
+console.log(Buffer.from(randomFillSync(a).buffer,
+                        a.byteOffset, a.byteLength).toString('hex'));
+
+const b = new DataView(new ArrayBuffer(10));
+console.log(Buffer.from(randomFillSync(b).buffer,
+                        b.byteOffset, b.byteLength).toString('hex'));
+
+const c = new ArrayBuffer(10);
+console.log(Buffer.from(randomFillSync(c)).toString('hex'));

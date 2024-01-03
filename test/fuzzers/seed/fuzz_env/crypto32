@@ -1,0 +1,21 @@
+const {
+  createReadStream,
+} = require('node:fs');
+const {
+  createHmac,
+} = require('node:crypto');
+const { argv } = require('node:process');
+
+const filename = argv[2];
+
+const hmac = createHmac('sha256', 'a secret');
+
+const input = createReadStream(filename);
+input.on('readable', () => {
+  const data = input.read();
+  if (data)
+    hmac.update(data);
+  else {
+    console.log(`${hmac.digest('hex')} ${filename}`);
+  }
+});

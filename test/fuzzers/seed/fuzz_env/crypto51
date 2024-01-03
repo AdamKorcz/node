@@ -1,0 +1,4 @@
+const original = [0xc0, 0xaf];
+const bytesAsString = Buffer.from(original).toString('utf8');
+const stringAsBytes = Buffer.from(bytesAsString, 'utf8');
+console.log(stringAsBytes);

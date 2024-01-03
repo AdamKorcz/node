@@ -1,0 +1,12 @@
+const {
+  createReadStream,
+} = require('node:fs');
+const {
+  createHmac,
+} = require('node:crypto');
+const { stdout } = require('node:process');
+
+const hmac = createHmac('sha256', 'a secret');
+
+const input = createReadStream('test.js');
+input.pipe(hmac).pipe(stdout);

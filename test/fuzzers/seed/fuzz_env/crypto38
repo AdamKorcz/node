@@ -1,0 +1,7 @@
+const {
+  getCiphers,
+} = require('node:crypto');
+
+console.log(getCiphers());
+console.log(getCurves());
+console.log(getHashes());

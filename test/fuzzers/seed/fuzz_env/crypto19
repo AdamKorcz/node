@@ -1,0 +1,17 @@
+const {
+  createECDH,
+  ECDH,
+} = require('node:crypto');
+
+const ecdh = createECDH('secp256k1');
+ecdh.generateKeys();
+
+const compressedKey = ecdh.getPublicKey('hex', 'compressed');
+
+const uncompressedKey = ECDH.convertKey(compressedKey,
+                                        'secp256k1',
+                                        'hex',
+                                        'hex',
+                                        'uncompressed');
+
+console.log(uncompressedKey === ecdh.getPublicKey('hex'));

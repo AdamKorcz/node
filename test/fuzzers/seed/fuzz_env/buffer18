@@ -1,0 +1,9 @@
+const { Buffer } = require('node:buffer');
+
+const buf = Buffer.allocUnsafe(26);
+
+for (let i = 0; i < 26; i++) {
+  buf[i] = i + 97;
+}
+buf.copy(buf, 0, 4, 10);
+console.log(buf.toString());

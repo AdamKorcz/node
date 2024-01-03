@@ -1,0 +1,21 @@
+const {
+  scrypt,
+  randomFill,
+  createCipheriv,
+} = require('node:crypto');
+
+const algorithm = 'aes-192-cbc';
+const password = 'Password used to generate key';
+
+scrypt(password, 'salt', 24, (err, key) => {
+  if (err) throw err;
+  randomFill(new Uint8Array(16), (err, iv) => {
+    if (err) throw err;
+
+    const cipher = createCipheriv(algorithm, key, iv);
+
+    let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    console.log(encrypted);
+  });
+});

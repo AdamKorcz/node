@@ -1,0 +1,8 @@
+const { Buffer } = require('node:buffer');
+const b = Buffer.from('abcdef');
+console.log(b.indexOf(99.9));
+console.log(b.indexOf(256 + 99));
+console.log(b.indexOf('b', undefined));
+console.log(b.indexOf('b', {}));
+console.log(b.indexOf('b', null));
+console.log(b.indexOf('b', []));

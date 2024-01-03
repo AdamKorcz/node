@@ -1,0 +1,16 @@
+const { Buffer } = require('node:buffer');
+
+const store = [];
+
+socket.on('readable', () => {
+  let data;
+  while (null !== (data = readable.read())) {
+    // Allocate for retained data.
+    const sb = Buffer.allocUnsafeSlow(10);
+
+    // Copy the data into the new allocation.
+    data.copy(sb, 0, 0, 10);
+
+    store.push(sb);
+  }
+});

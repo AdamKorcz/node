@@ -1,0 +1,23 @@
+const zlib = require('node:zlib');
+const http = require('node:http');
+const { pipeline } = require('node:stream');
+
+http.createServer((request, response) => {
+  response.writeHead(200, { 'content-encoding': 'gzip' });
+  const output = zlib.createGzip();
+  let i;
+
+  pipeline(output, response, (err) => {
+    if (err) {
+      clearInterval(i);
+      response.end();
+      console.error('An error occurred:', err);
+    }
+  });
+
+  i = setInterval(() => {
+    output.write(`The current time is ${Date()}\n`, () => {
+      output.flush();
+    });
+  }, 1000);
+}).listen(1337);
