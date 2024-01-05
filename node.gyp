@@ -1046,6 +1046,270 @@
         }],
       ],
     }, # fuzz_sign_verify
+    { # fuzz_diffieHellmanDER
+      'target_name': 'fuzz_diffieHellmanDER',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_diffieHellmanDER.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_diffieHellmanDER
+    { # fuzz_diffieHellmanPEM
+      'target_name': 'fuzz_diffieHellmanPEM',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_diffieHellmanPEM.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_diffieHellmanPEM
+    { # fuzz_diffieHellmanJWK
+      'target_name': 'fuzz_diffieHellmanJWK',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_diffieHellmanJWK.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_diffieHellmanJWK
+    { # fuzz_createPrivateKeyDER
+      'target_name': 'fuzz_createPrivateKeyDER',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_createPrivateKeyDER.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_createPrivateKeyDER
+    { # fuzz_createPrivateKeyPEM
+      'target_name': 'fuzz_createPrivateKeyPEM',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_createPrivateKeyPEM.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_createPrivateKeyPEM
+    { # fuzz_createPrivateKeyJWK
+      'target_name': 'fuzz_createPrivateKeyJWK',
+      'type': 'executable',
+      'dependencies': [
+        '<(node_lib_target_name)',
+        'deps/histogram/histogram.gyp:histogram',
+        'deps/uvwasi/uvwasi.gyp:uvwasi',
+      ],
+      'includes': [
+        'node.gypi'
+      ],
+      'include_dirs': [
+        'src',
+        'tools/msvs/genfiles',
+        'deps/v8/include',
+        'deps/cares/include',
+        'deps/uv/include',
+        'deps/uvwasi/include',
+        'test/cctest',
+      ],
+      'defines': [
+        'NODE_ARCH="<(target_arch)"',
+        'NODE_PLATFORM="<(OS)"',
+        'NODE_WANT_INTERNALS=1',
+        'HAVE_OPENSSL=1',
+      ],
+      'sources': [
+        'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_createPrivateKeyJWK.cc',
+      ],
+      'conditions': [
+        ['OS=="linux"', {
+          'ldflags': [ '-fsanitize=fuzzer' ]
+        }],
+        # Ensure that ossfuzz flag has been set and that we are on Linux
+        [ 'OS!="linux" or ossfuzz!="true"', {
+          'type': 'none',
+        }],
+        # Avoid excessive LTO
+        ['enable_lto=="true"', {
+          'ldflags': [ '-fno-lto' ],
+        }],
+      ],
+    }, # fuzz_createPrivateKeyJWK
     { # fuzz_httpparser1
       'target_name': 'fuzz_httpparser1',
       'type': 'executable',
