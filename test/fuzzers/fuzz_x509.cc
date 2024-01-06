@@ -111,7 +111,6 @@ std::string S5 =
 	"var _ = x509.verify(x509.publicKey);\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
-  printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
