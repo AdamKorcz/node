@@ -110,7 +110,6 @@ std::string S4 =
 
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
-  printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
