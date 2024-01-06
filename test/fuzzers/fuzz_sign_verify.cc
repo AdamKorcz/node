@@ -29,33 +29,6 @@ static TracingAgentUniquePtr tracing_agent;
 static NodePlatformUniquePtr platform;
 static uv_loop_t current_loop;
 
-/*FuzzedDataProvider *prov = NULL;
-
-extern "C" void fuzz_random_init(const uint8_t *data, size_t size) {
-   assert(prov == NULL);
-}
-
-extern "C" void fuzz_random_destroy() {
-  assert(prov != NULL);
-  delete prov;
-  prov = NULL;
-}
-
-extern "C" char *get_random_string() {
-   assert(prov != NULL);
-
-   std::string s1 = prov->ConsumeRandomLengthString();
-   char *tmp = (char *)malloc(s1.size() + 1);
-   memcpy(tmp, s1.c_str(), s1.size());
-   tmp[s1.size()] = '\0';
-   return tmp;
-}
-
-extern "C" int fuzz_randomizer_get_int(int min, int max) {
-   assert(prov != NULL);
-   return prov->ConsumeIntegralInRange<int>(min, max);
-}*/
-
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   uv_os_unsetenv("NODE_OPTIONS");
   std::vector<std::string> node_argv{ "fuzz_env" };
@@ -139,7 +112,6 @@ std::string W6 = ");\n"
 	"RSAVerify(algorithm, publicKey, sig, dataToSign);\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
-  printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
