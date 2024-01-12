@@ -52,7 +52,6 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
 }
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
-	printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
@@ -178,12 +177,18 @@ bool isInvalid(std::string s) {
     for (int i=0; i<s.length(); i++) {
         if(s[i]==backtick) {
         	// Found a backtick. Check if it is escaped
+        	if (i == 0) {
+        		return true;
+        	}
             if(s.at(i-1) != '\\') {
                 return true;
             }
         }
         if(s[i]=='"') {
-        	// Found a backtick. Check if it is escaped
+        	// Found a double quote. Check if it is escaped
+        	if (i == 0) {
+        		return true;
+        	}
             if(s.at(i-1) != '\\') {
                 return true;
             }
@@ -193,8 +198,6 @@ bool isInvalid(std::string s) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
-  FuzzerFixtureHelper ffh;
-
   FuzzedDataProvider prov(data2, size);
   std::string post_request1_body = prov.ConsumeRandomLengthString();
   std::string post_request2_body = prov.ConsumeRandomLengthString();
@@ -225,6 +228,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   std::stringstream stream;
   stream << script_header << pr1_str << pr2_str << pr3_str << script_footer << std::endl;
   std::string js_code = stream.str();
+  FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
   ffh.Teardown();
   return 0;
