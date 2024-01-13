@@ -137,13 +137,16 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
-  FuzzerFixtureHelper ffh;
   FuzzedDataProvider prov(data2, size);
-  std::string s1 = prov.ConsumeRandomLengthString();
+  std::string s1 = prov.ConsumeRemainingBytesAsString();
+  if (hasUnescapedSingleQuotes(s1)) {
+    return 0;
+  }
+  
   std::stringstream stream;
   stream << S1 << S2 << s1 << S3 << S4 << std::endl;
   std::string js_code = stream.str();
-  //std::string s(reinterpret_cast<const char*>(data2), size);
+  FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
   ffh.Teardown();
   return 0;

@@ -75,10 +75,10 @@ public:
 
 std::string S1 = 
 	"const { X509Certificate } = require('node:crypto');\n"
-	"const x509 = new X509Certificate('";
+	"const x509 = new X509Certificate(\"";
 // RANDOM
 std::string S2 = 
-	"');\n"
+	"\");\n"
 	"var _ = x509.subject;\n"
 	"var _ = x509.ca;\n"
 	"x509.checkEmail(\"";
@@ -138,15 +138,27 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
-  FuzzerFixtureHelper ffh;
   FuzzedDataProvider prov(data2, size);
   std::string r1 = prov.ConsumeRandomLengthString();
   std::string r2 = prov.ConsumeRandomLengthString();
   std::string r3 = prov.ConsumeRandomLengthString();
   std::string r4 = prov.ConsumeRandomLengthString();
+  if (hasUnescapedDoubleQuotes(r1)) {
+    return 0;
+  }
+  if (hasUnescapedDoubleQuotes(r2)) {
+    return 0;
+  }
+  if (hasUnescapedDoubleQuotes(r3)) {
+    return 0;
+  }
+  if (hasUnescapedDoubleQuotes(r4)) {
+    return 0;
+  }
   std::stringstream stream;
   stream << S1 << r1 << S2 << r2 << S3 << r3 << S4 << r4 << S5 << std::endl;
   std::string js_code = stream.str();
+  FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
   ffh.Teardown();
   return 0;

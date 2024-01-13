@@ -75,10 +75,18 @@ public:
 
 std::string S1 = "const { subtle } = globalThis.crypto;\n"
 	"require('crypto');\n"
-	"var key = crypto.createPrivateKey({ key: '";
+	"var privateKey = crypto.createPrivateKey({ key: '";
 //RANDOM
 std::string S2 = "', format: 'pem' });\n"
 	"subtle.exportKey('pem', key)\n;";
+  "const pubKeyObject = crypto.createPublicKey({\n"
+  "  key: privateKey,\n"
+  "  format: 'pem'\n"
+  "});\n"
+  "const publicKey = pubKeyObject.export({\n"
+  "  format: 'pem',\n"
+  "  type: 'spki'\n"
+  "});\n";
 
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
