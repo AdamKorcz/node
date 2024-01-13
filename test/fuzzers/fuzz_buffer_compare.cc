@@ -81,7 +81,7 @@ std::string S2 =
   "const buffer2 = Buffer.from('";
 //RANDOM2
 std::string S3 =
-  "');\n";
+  "');\n"
   "const _ = Buffer.compare(buffer1, buffer2);\n"
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
