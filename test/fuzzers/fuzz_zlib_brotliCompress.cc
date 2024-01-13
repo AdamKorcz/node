@@ -81,7 +81,7 @@ std::string S2 =
 //RANDOM
 std::string S3 =
 	"', (err, buffer) => {\n"
-  \"  var _ = buffer.toString('base64');\n" 
+  "  var _ = buffer.toString('base64');\n" 
   "});\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
