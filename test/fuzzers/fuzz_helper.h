@@ -58,7 +58,6 @@ bool hasUnescapedDoubleQuotes(std::string s) {
   }
   return false;
 }
-<<<<<<< HEAD
 // checks for unescaped single quotes which would break the script
 bool hasUnescapedSingleQuotes(std::string s) {
   for (int i=0; i<s.length(); i++) {
@@ -74,5 +73,3 @@ bool hasUnescapedSingleQuotes(std::string s) {
   }
   return false;
 }
-=======
->>>>>>> 9f4c9d76 (Add cipher fuzzer)
