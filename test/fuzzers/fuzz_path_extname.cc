@@ -116,7 +116,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   if (hasUnescapedSingleQuotes(s1)) {
     return 0;
   }
-  FuzzedDataProvider prov(data2, size);
+  
+  std::stringstream stream;
   stream << S1 << S2 << s1 << S3 << std::endl;
   std::string js_code = stream.str();
   FuzzerFixtureHelper ffh;
