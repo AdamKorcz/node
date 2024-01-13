@@ -111,7 +111,7 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   FuzzedDataProvider prov(data2, size);
-  std::string s1 = prov.ConsumeRandomLengthString();
+  std::string s1 = prov.ConsumeRemainingBytesAsString();
   if (hasUnescapedSingleQuotes(s1)) {
     return 0;
   }
