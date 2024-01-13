@@ -61,7 +61,7 @@ bool hasUnescapedDoubleQuotes(std::string s) {
 // checks for unescaped single quotes which would break the script
 bool hasUnescapedSingleQuotes(std::string s) {
   for (int i=0; i<s.length(); i++) {
-    if(s[i]=="'") {
+    if(s[i]=='\'') {
         // Found a double quote. Check if it is escaped
         if (i == 0) {
                 return true;
