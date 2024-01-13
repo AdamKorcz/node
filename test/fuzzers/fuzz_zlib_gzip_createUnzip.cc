@@ -73,25 +73,26 @@ public:
   }
 };
 
-std::string S1 = "const { subtle } = globalThis.crypto;\n"
-	"require('crypto');\n"
-	"var privateKey = crypto.createPrivateKey({ key: '";
+std::string S1 =
+	"const zlib = require('zlib'); \n\n";
+
+std::string S2 =
+	"zlib.gzip('";
 //RANDOM
-std::string S2 = "', format: 'jwk' });\n";
-
-std::string S3 = 
-	"var publicKey = crypto.createPublicKey({ key: '";
-//RANDOM
-std::string S4 = "', format: 'jwk' });\n";
-
-std::string S5 = 
-	"const _ = crypto.diffieHellman({ \n"
-	"	privateKey: privateKey,\n"
-	"	publicKey: publicKey\n"
-	"});\n";
-
+std::string S3 =
+	"', function (err, data) {\n"
+  "  if (err) {\n"
+  "    return;\n"
+  "  }\n"
+  "  const unzip = zlib.createUnzip();\n"
+  "  unzip.write(data);\n"
+  "  unzip.on('data', function (data) {\n"
+  "      let _ = data.toString('hex');\n"
+  "  });\n"
+  "});\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
+  printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
@@ -120,16 +121,12 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   FuzzedDataProvider prov(data2, size);
-  std::string r1 = prov.ConsumeRandomLengthString();
-  std::string r2 = prov.ConsumeRandomLengthString();
-  if (hasUnescapedSingleQuotes(r1)) {
-    return 0;
-  }
-  if (hasUnescapedSingleQuotes(r2)) {
+  std::string s1 = prov.ConsumeRemainingBytesAsString();
+  if (hasUnescapedSingleQuotes(s1)) {
     return 0;
   }
   std::stringstream stream;
-  stream << S1 << r1 << S2 << S3 << r2 << S4 << S5 << std::endl;
+  stream << S1 << S2 << s1 << S3 << std::endl;
   std::string js_code = stream.str();
   FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
