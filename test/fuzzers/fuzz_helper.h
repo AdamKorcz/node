@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 struct Argv {
  public:
   Argv() : Argv({"node", "-p", "process.version"}) {}
@@ -45,10 +47,10 @@ struct Argv {
 bool hasUnescapedDoubleQuotes(std::string s) {
   for (int i=0; i<s.length(); i++) {
     if(s[i]=='"') {
-        // Found a double quote. Check if it is escaped
-        if (i == 0) {
-                return true;
-        }
+    	// Found a double quote. Check if it is escaped
+    	if (i == 0) {
+    		return true;
+    	}
       if(s.at(i-1) != '\\') {
           return true;
       }
@@ -56,6 +58,7 @@ bool hasUnescapedDoubleQuotes(std::string s) {
   }
   return false;
 }
+<<<<<<< HEAD
 // checks for unescaped single quotes which would break the script
 bool hasUnescapedSingleQuotes(std::string s) {
   for (int i=0; i<s.length(); i++) {
@@ -71,3 +74,5 @@ bool hasUnescapedSingleQuotes(std::string s) {
   }
   return false;
 }
+=======
+>>>>>>> 9f4c9d76 (Add cipher fuzzer)
