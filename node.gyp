@@ -1351,8 +1351,8 @@
         }],
       ],
     }, # fuzz_zlib_brotliDecompress
-    { # fuzz_zlibBrotliDecompress
-      'target_name': 'fuzz_zlibBrotliDecompress',
+    { # fuzz_zlib_BrotliDecompress
+      'target_name': 'fuzz_zlib_BrotliDecompress',
       'type': 'executable',
       'dependencies': [
         '<(node_lib_target_name)',
@@ -1379,7 +1379,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
-        'test/fuzzers/fuzz_zlibBrotliDecompress.cc',
+        'test/fuzzers/fuzz_zlib_BrotliDecompress.cc',
       ],
       'conditions': [
         ['OS=="linux"', {
@@ -1394,7 +1394,7 @@
           'ldflags': [ '-fno-lto' ],
         }],
       ],
-    }, # fuzz_zlibBrotliDecompress
+    }, # fuzz_zlib_BrotliDecompress
     { # fuzz_zlib_createBrotliDecompress
       'target_name': 'fuzz_zlib_createBrotliDecompress',
       'type': 'executable',
