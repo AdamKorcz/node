@@ -81,7 +81,7 @@ std::string S2 =
   "const checkStr = '";
 //RANDOM2
 std::string S3 =
-  "';\n";
+  "';\n"
   "const _ = buffer1.includes(checkStr);\n"
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
