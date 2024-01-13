@@ -74,15 +74,11 @@ public:
 };
 
 std::string S1 =
-	"const buffer1 = new Buffer('";
+  "const v8 = require('v8');\n"
+	"console.log(v8.deserialize(v8.serialize('";
 //RANDOM1
 std::string S2 =
-  "');\n"
-  "const checkStr = '";
-//RANDOM2
-std::string S3 =
-  "';\n"
-  "const _ = buffer1.includes(checkStr);\n";
+  "')));\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
   printf("%s\n", env_string);
@@ -114,16 +110,12 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   FuzzedDataProvider prov(data2, size);
-  std::string s1 = prov.ConsumeRandomLengthString();
-  std::string s2 = prov.ConsumeRandomLengthString();
+  std::string s1 = prov.ConsumeRemainingBytesAsString();
   if (hasUnescapedSingleQuotes(s1)) {
     return 0;
   }
-  if (hasUnescapedSingleQuotes(s2)) {
-    return 0;
-  }
   std::stringstream stream;
-  stream << S1 << s1 << S2 << s2 << S3 << std::endl;
+  stream << S1 << s1 << S2 << std::endl;
   std::string js_code = stream.str();
   FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
