@@ -73,17 +73,26 @@ public:
   }
 };
 
-std::string S1 =
-	"const path = require('path');\n\n";
-
-std::string S2 =
-	"const p = path.toNamespacedPath('";
-//RANDOM
-std::string S3 =
-	"');\n";
+std::string S1 = 
+	"const { StringDecoder } = require('node:string_decoder');\n"
+  "const decoder = new StringDecoder('utf8');\n"
+  "const RANDOM1 = '";
+  //RANDOM1
+  std::string S2 = 
+  "';\n"
+  "const RANDOM2 = '";
+  //RANDOM2
+  std::string S3 = 
+  "';\n"
+  "const RANDOM3 = '";
+  //RANDOM3
+  std::string S4 = 
+  "';\n"
+  "decoder.write(Buffer.from(RANDOM1, 'utf8'));\n"
+  "decoder.write(Buffer.from(RANDOM2, 'utf8'));\n"
+  "var _ = decoder.end(Buffer.from(RANDOM3, 'utf8'));\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
-  printf("%s\n", env_string);
   const v8::HandleScope handle_scope(isolate_);
   Argv argv;
 
@@ -112,12 +121,20 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
   FuzzedDataProvider prov(data2, size);
-  std::string s1 = prov.ConsumeRemainingBytesAsString();
-  if (hasUnescapedSingleQuotes(s1)) {
+  std::string r1 = prov.ConsumeRandomLengthString();
+  std::string r2 = prov.ConsumeRandomLengthString();
+  std::string r3 = prov.ConsumeRandomLengthString();
+  if (hasUnescapedSingleQuotes(r1)) {
+    return 0;
+  }
+  if (hasUnescapedSingleQuotes(r2)) {
+    return 0;
+  }
+  if (hasUnescapedSingleQuotes(r3)) {
     return 0;
   }
   std::stringstream stream;
-  stream << S1 << S2 << s1 << S3 << std::endl;
+  stream << S1 << r1 << S2 << r2 << S3 << r3 << S4 << std::endl;
   std::string js_code = stream.str();
   FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());

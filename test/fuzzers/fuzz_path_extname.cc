@@ -77,10 +77,10 @@ std::string S1 =
 	"const path = require('path');\n\n";
 
 std::string S2 =
-	"const p = path.extname(";
+	"const p = path.extname('";
 //RANDOM
 std::string S3 =
-	");\n";
+	"');\n";
 
 void EnvTest(v8::Isolate* isolate_, char* env_string) {
   printf("%s\n", env_string);
@@ -111,13 +111,15 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
-  FuzzerFixtureHelper ffh;
   FuzzedDataProvider prov(data2, size);
-  std::string s1 = prov.ConsumeRandomLengthString();
-  std::stringstream stream;
+  std::string s1 = prov.ConsumeRemainingBytesAsString();
+  if (hasUnescapedSingleQuotes(s1)) {
+    return 0;
+  }
+  FuzzedDataProvider prov(data2, size);
   stream << S1 << S2 << s1 << S3 << std::endl;
   std::string js_code = stream.str();
-  //std::string s(reinterpret_cast<const char*>(data2), size);
+  FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
   ffh.Teardown();
   return 0;

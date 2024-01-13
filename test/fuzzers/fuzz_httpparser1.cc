@@ -106,12 +106,12 @@ std::string S1 =
 	"  return parser;\n"
 	"}\n"
 	"\n"
-	"const request = Buffer.from('";
+	"const request = Buffer.from(\"";
 
 // RANDOM
 
 std::string S2 =
-	"');\n"
+	"\", 'utf-8');\n"
 	"\n"
 	"const onBody = (buf) => {\n"
 	"  const body = String(buf);\n"
@@ -147,12 +147,15 @@ void EnvTest(v8::Isolate* isolate_, char* env_string) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
-  FuzzerFixtureHelper ffh;
   FuzzedDataProvider prov(data2, size);
-  std::string r1 = prov.ConsumeRandomLengthString();
+  std::string r1 = prov.ConsumeRemainingBytesAsString();
+  if (hasUnescapedDoubleQuotes(r1)) {
+    return 0;
+  }
   std::stringstream stream;
   stream << S1 << r1 << S2 << std::endl;
   std::string js_code = stream.str();
+  FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
   ffh.Teardown();
   return 0;
