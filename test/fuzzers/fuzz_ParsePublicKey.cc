@@ -11,8 +11,8 @@
 using EVPKeyPointer = node::DeleteFnPtr<EVP_PKEY, EVP_PKEY_free>;
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  EVPKeyPointer* pkey;
+  EVPKeyPointer pkey;
   node::crypto::ManagedEVPPKey mk;
-  mk.FuzzParsePublicKeyPEM(pkey, reinterpret_cast<const char*>(data), size);
+  mk.FuzzParsePublicKeyPEM(&pkey, reinterpret_cast<const char*>(data), size);
   return 0;
 }
