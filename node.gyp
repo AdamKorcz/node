@@ -1084,6 +1084,14 @@
         # Avoid excessive LTO
         ['enable_lto=="true"', {
           'ldflags': [ '-fno-lto' ],
+        }],        
+        [ 'node_use_openssl=="true"', {
+          'sources': [
+            '<@(node_crypto_sources)',
+          ],
+          'dependencies': [
+            'deps/ncrypto/ncrypto.gyp:ncrypto',
+          ],
         }],
       ],
     }, # fuzz_quic_token
