@@ -33,7 +33,7 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   std::vector<std::string> exec_argv;
   std::vector<std::string> errors;
 
-  node::InitializeNodeWithArgs(&node_argv, &exec_argv, &errors);
+  //node::InitializeNodeWithArgs(&node_argv, &exec_argv, &errors);
 
   tracing_agent = std::make_unique<node::tracing::Agent>();
   node::tracing::TraceEventHelper::SetAgent(tracing_agent.get());
