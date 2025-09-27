@@ -1051,6 +1051,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1096,6 +1097,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1141,6 +1143,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1186,6 +1189,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1231,6 +1235,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1276,6 +1281,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1321,6 +1327,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1366,6 +1373,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1411,6 +1419,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1456,6 +1465,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1501,6 +1511,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1546,6 +1557,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1591,6 +1603,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1636,6 +1649,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1681,6 +1695,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1726,6 +1741,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1771,6 +1787,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1816,6 +1833,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1861,6 +1879,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1906,6 +1925,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1951,6 +1971,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -1996,6 +2017,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2041,6 +2063,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2086,6 +2109,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2131,6 +2155,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2176,6 +2201,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2221,6 +2247,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2266,6 +2293,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2311,6 +2339,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2356,6 +2385,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2401,6 +2431,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2446,6 +2477,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2491,6 +2523,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2536,6 +2569,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2581,6 +2615,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2626,6 +2661,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2671,6 +2707,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2715,6 +2752,7 @@
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
 
       'includes': [
@@ -2759,6 +2797,7 @@
         '<(node_lib_target_name)',
         'deps/histogram/histogram.gyp:histogram',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2806,6 +2845,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
@@ -2855,6 +2895,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/nbytes/nbytes.gyp:nbytes',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
+        'deps/nbytes/nbytes.gyp:nbytes',
       ],
       'includes': [
         'node.gypi'
