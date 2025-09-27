@@ -59,7 +59,9 @@ public:
   FuzzerFixtureHelper()
     : allocator(ArrayBufferUniquePtr(node::CreateArrayBufferAllocator(),
                                      &node::FreeArrayBufferAllocator)) {
-    isolate_ = NewIsolate(allocator.get(), &current_loop, platform.get());
+    std::shared_ptr<node::ArrayBufferAllocator> aba =
+        node::ArrayBufferAllocator::Create();
+    isolate_ = NewIsolate(aba, &current_loop, platform.get());
     CHECK_NOT_NULL(isolate_);
     isolate_->Enter();
   };
