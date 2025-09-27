@@ -124,7 +124,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data2, size_t size) {
     return 0;
   }
   std::stringstream stream;
-  stream << S1 << S2 << s1 << S3 << s2 << std::endl;
+  stream << S1 << S2 << s1 << S3 << s2 << S4 << std::endl;
   std::string js_code = stream.str();
   FuzzerFixtureHelper ffh;
   EnvTest(ffh.isolate_, (char*)js_code.c_str());
