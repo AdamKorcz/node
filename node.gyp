@@ -1052,6 +1052,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1100,6 +1101,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1148,6 +1150,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1196,6 +1199,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1244,6 +1248,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1292,6 +1297,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1340,6 +1346,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1388,6 +1395,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1436,6 +1444,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1484,6 +1493,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1532,6 +1542,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1580,6 +1591,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1628,6 +1640,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1676,6 +1689,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1724,6 +1738,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1772,6 +1787,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1820,6 +1836,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1868,6 +1885,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1916,6 +1934,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -1964,6 +1983,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2012,6 +2032,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2060,6 +2081,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2108,6 +2130,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2156,6 +2179,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2204,6 +2228,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2252,6 +2277,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2300,6 +2326,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2348,6 +2375,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2396,6 +2424,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2444,6 +2473,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2492,6 +2522,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2540,6 +2571,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2588,6 +2620,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2636,6 +2669,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2684,6 +2718,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2732,6 +2767,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2780,6 +2816,7 @@
         'deps/uvwasi/uvwasi.gyp:uvwasi',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2827,6 +2864,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
 
       'includes': [
@@ -2874,6 +2912,7 @@
         'deps/histogram/histogram.gyp:histogram',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
@@ -2925,6 +2964,7 @@
         'deps/nbytes/nbytes.gyp:nbytes',
         'deps/ncrypto/ncrypto.gyp:ncrypto',
         'deps/nbytes/nbytes.gyp:nbytes',
+        'tools/v8_gypfiles/abseil.gyp:abseil',
       ],
       'includes': [
         'node.gypi'
