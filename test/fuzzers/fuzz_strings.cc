@@ -71,7 +71,7 @@ public:
     isolate_ = NewIsolate(allocator.get(), &current_loop, platform.get());
     CHECK_NOT_NULL(isolate_);
     isolate_->Enter();
-  };
+  }
 
   void Teardown() {
     platform->DrainTasks(isolate_);
