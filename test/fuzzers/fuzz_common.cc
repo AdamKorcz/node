@@ -59,8 +59,8 @@ IsolateScope::~IsolateScope() {
   // Drain any pending tasks, then leave & dispose.
   platform->DrainTasks(isolate_);
   isolate_->Exit();
-  platform->UnregisterIsolate(isolate_);
-  isolate_->Dispose();
+  isolate_->Dispose();                     // let V8 finish; it may still call into platform
+  platform->UnregisterIsolate(isolate_);   // now it's safe to drop the mapping
 
   isolate_ = nullptr;
 }
