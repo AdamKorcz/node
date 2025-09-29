@@ -1,12 +1,34 @@
 #include "fuzz_common.h"
 
 #include "v8.h"
+// If your V8 build has cppgc and Node uses it, you can include and init it.
+// It’s safe to omit if unavailable.
+// #include "cppgc/common.h"
+
 #include "uv.h"
 
+// These headers exist in Node’s source; if your include paths differ, you can
+// drop the tracing agent and pass nullptr when constructing NodePlatform.
+#include "tracing/agent.h"
+#include "tracing/trace_event.h"
+
 namespace fuzz {
+namespace {
+// Process-wide state (no JS/Env state is kept here)
+std::unique_ptr<node::tracing::Agent> g_tracing_agent;
+std::unique_ptr<node::NodePlatform>   g_platform;
+uv_loop_t                              g_loop;
+}  // namespace
 
-// --- IsolateScope ---
+// ---------- Runtime ----------
+Runtime& Runtime::Get() {
+  static Runtime rt;
+  return rt;
+}
+uv_loop_t* Runtime::loop() { return &g_loop; }
+node::NodePlatform* Runtime::platform() { return g_platform.get(); }
 
+// ---------- IsolateScope ----------
 IsolateScope::IsolateScope() {
   isolate_ = node::NewIsolate(
       allocator_.get(),
@@ -26,20 +48,14 @@ IsolateScope::~IsolateScope() {
   // Leave the isolate before disposal.
   isolate_->Exit();
 
-  // Prefer the helper if available (newer Node).
-  // If your NodePlatform doesn't have DisposeIsolate(), fall back to the pair.
-#if defined(NODE_PLATFORM_HAS_DISPOSE_ISOLATE)
-  platform->DisposeIsolate(isolate_);
-#else
+  // Version-tolerant teardown: always supported
   platform->UnregisterIsolate(isolate_);
   isolate_->Dispose();
-#endif
 
   isolate_ = nullptr;
 }
 
-// --- RunEnvString ---
-
+// ---------- RunEnvString ----------
 void RunEnvString(v8::Isolate* isolate,
                   const char* env_js,
                   const EnvRunOptions& opts) {
@@ -69,18 +85,14 @@ void RunEnvString(v8::Isolate* isolate,
   auto* loop     = Runtime::Get().loop();
 
   for (int i = 0; i < opts.max_pumps; ++i) {
-    bool progressed = false;
-
-    // Run V8/Node foreground tasks (e.g., Promise continuations scheduled there).
-    progressed |= platform->FlushForegroundTasks(isolate);
+    // Run V8/Node foreground tasks.
+    platform->DrainTasks(isolate);
 
     // Drive libuv once without blocking (process due I/O, timers, etc.).
-    progressed |= (uv_run(loop, UV_RUN_NOWAIT) != 0);
+    uv_run(loop, UV_RUN_NOWAIT);
 
     // Run microtasks (Promises).
     isolate->PerformMicrotaskCheckpoint();
-
-    if (!progressed) break;  // nothing left to do
   }
 
   // Tear down this Environment/IsolateData (no cross-input state).
@@ -88,8 +100,40 @@ void RunEnvString(v8::Isolate* isolate,
   node::FreeIsolateData(isolate_data);
 
   // Best-effort nudge to leave things tidy (no-op if already quiescent).
-  platform->FlushForegroundTasks(isolate);
+  platform->DrainTasks(isolate);
   uv_run(loop, UV_RUN_NOWAIT);
 }
 
-} // namespace fuzz
+// ---------- Shared libFuzzer initializer ----------
+extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
+  // Keep the process environment clean for Node/V8.
+  uv_os_unsetenv("NODE_OPTIONS");
+
+  std::vector<std::string> node_argv{ "fuzz_env" };
+  std::vector<std::string> exec_argv;
+  std::vector<std::string> errors;
+  node::InitializeNodeWithArgs(&node_argv, &exec_argv, &errors);
+
+  // Tracing is optional; if these headers aren't available, you can set the
+  // tracing controller to nullptr and skip TraceEventHelper.
+  g_tracing_agent = std::make_unique<node::tracing::Agent>();
+  node::tracing::TraceEventHelper::SetAgent(g_tracing_agent.get());
+  auto* tracing_controller = g_tracing_agent->GetTracingController();
+
+  // Init loop and platform
+  if (uv_loop_init(&g_loop) != 0) {
+    // If you prefer, handle the error or abort; fuzzers usually just proceed.
+  }
+
+  constexpr int kV8ThreadPoolSize = 4;
+  g_platform = std::make_unique<node::NodePlatform>(kV8ThreadPoolSize, tracing_controller);
+
+  v8::V8::InitializePlatform(g_platform.get());
+  // If your build has cppgc available and Node expects it, you may enable:
+  // cppgc::InitializeProcess(g_platform->GetPageAllocator());
+  v8::V8::Initialize();
+
+  return 0;
+}
+
+}  // namespace fuzz

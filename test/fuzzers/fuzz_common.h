@@ -11,25 +11,18 @@
 #include "libplatform/libplatform.h"
 #include "uv.h"
 
-// Shared runtime and helpers for all fuzzers.
-// Replaces per-file FuzzerFixtureHelper, EnvTest, and LLVMFuzzerInitialize.
-
-
 namespace fuzz {
 
-// Add a bounded pump knob (defaults to a few ticks so async callbacks can run).
-struct EnvRunOptions {
-  node::EnvironmentFlags::Flags flags = node::EnvironmentFlags::kDefaultFlags;
-  bool print_js_to_stdout = false;
-  int  max_pumps = 8;  // run foreground tasks, uv loop, and microtasks up to N times
+// Process-wide plumbing (does NOT hold JS state between inputs)
+struct Runtime {
+  static Runtime& Get();              // singleton accessor
+  uv_loop_t* loop();                  // uv loop used by Node
+  node::NodePlatform* platform();     // V8/Node platform
+private:
+  Runtime() = default;
 };
 
-// Evaluate a one-off JS program inside a fresh Context/Environment.
-void RunEnvString(v8::Isolate* isolate,
-                  const char* env_js,
-                  const EnvRunOptions& opts = {});
-
-// RAII isolate scope (ctor unchanged; dtor updated in .cc below)
+// RAII per-input isolate (fresh JS heap each call)
 class IsolateScope {
  public:
   IsolateScope();
@@ -43,4 +36,16 @@ class IsolateScope {
       node::CreateArrayBufferAllocator(), &node::FreeArrayBufferAllocator};
 };
 
-} // namespace fuzz
+// Options for the one-off environment runner
+struct EnvRunOptions {
+  node::EnvironmentFlags::Flags flags = node::EnvironmentFlags::kDefaultFlags;
+  bool print_js_to_stdout = false;
+  int  max_pumps = 8;  // pump foreground tasks + libuv + microtasks up to N rounds
+};
+
+// Create a fresh Context/Environment, run JS, pump a bit, then tear down.
+void RunEnvString(v8::Isolate* isolate,
+                  const char* env_js,
+                  const EnvRunOptions& opts = {});
+
+}  // namespace fuzz
