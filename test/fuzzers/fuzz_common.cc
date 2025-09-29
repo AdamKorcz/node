@@ -3,22 +3,20 @@
 #include "v8.h"
 #include "uv.h"
 
-#include "tracing/agent.h"
-#include "tracing/trace_event.h"
-
-// Match cctest fixture includes/behavior
+// cppgc platform init/shutdown like cctest does
 #include "cppgc/platform.h"
-#include "absl/synchronization/mutex.h"
 
 namespace fuzz {
 namespace {
-// Process-wide plumbing (no JS state lives here)
-std::unique_ptr<node::tracing::Agent> g_tracing_agent;
+// Process-wide plumbing (no JS/Environment state lives here)
 std::unique_ptr<node::NodePlatform>   g_platform;
+std::unique_ptr<node::ArrayBufferAllocator,
+                decltype(&node::FreeArrayBufferAllocator)> g_allocator{
+    nullptr, &node::FreeArrayBufferAllocator};
 uv_loop_t                              g_loop;
 
 void GlobalShutdown() {
-  // Mirror test/cctest/node_test_fixture.cc TearDown
+  // Mirror cctest-ish teardown order
   cppgc::ShutdownProcess();
   v8::V8::Dispose();
   v8::V8::DisposePlatform();
@@ -26,10 +24,10 @@ void GlobalShutdown() {
     g_platform->Shutdown();
     g_platform.reset();
   }
-  g_tracing_agent.reset();
+  g_allocator.reset();
 
-  // uv_loop_close() can fail if handles still exist; fuzzers often skip it.
-  // Uncomment if you ensure the loop is quiescent:
+  // uv_loop_close() may fail if any process-scoped handles remain; fuzzers usually skip it.
+  // If your loop is guaranteed quiescent, you can enable:
   // uv_loop_close(&g_loop);
 }
 }  // namespace
@@ -41,11 +39,13 @@ Runtime& Runtime::Get() {
 }
 uv_loop_t* Runtime::loop() { return &g_loop; }
 node::NodePlatform* Runtime::platform() { return g_platform.get(); }
+node::ArrayBufferAllocator* Runtime::allocator() { return g_allocator.get(); }
 
 // ---------- IsolateScope ----------
 IsolateScope::IsolateScope() {
+  // Fresh isolate per input; reuse process-wide allocator/platform/loop
   isolate_ = node::NewIsolate(
-      allocator_.get(),
+      Runtime::Get().allocator(),
       Runtime::Get().loop(),
       Runtime::Get().platform());
   if (isolate_) isolate_->Enter();
@@ -56,15 +56,35 @@ IsolateScope::~IsolateScope() {
 
   auto* platform = Runtime::Get().platform();
 
-  // Drain any pending tasks, then leave & dispose.
+  // Drain any pending foreground tasks, leave, then dispose.
   platform->DrainTasks(isolate_);
   isolate_->Exit();
-  isolate_->Dispose();                     // let V8 finish; it may still call into platform
-  platform->UnregisterIsolate(isolate_);   // now it's safe to drop the mapping
+
+  // IMPORTANT: Keep the isolate registered with the platform while disposing.
+  // V8/CPPGC may query the platform during teardown.
+  isolate_->Dispose();
+
+  // Now it's safe to drop NodePlatform's per-isolate mapping.
+  platform->UnregisterIsolate(isolate_);
 
   isolate_ = nullptr;
 }
 
+// Helper: bounded pump of foreground tasks + libuv + microtasks
+static inline void BoundedPump(v8::Isolate* isolate,
+                               int max_pumps,
+                               node::NodePlatform* platform,
+                               uv_loop_t* loop) {
+  for (int i = 0; i < max_pumps; ++i) {
+    bool progressed = false;
+    platform->DrainTasks(isolate);
+    progressed |= (uv_run(loop, UV_RUN_NOWAIT) != 0);
+    isolate->PerformMicrotaskCheckpoint();
+    if (!progressed) break;
+  }
+}
+
+// ---------- RunInEnvironment ----------
 void RunInEnvironment(v8::Isolate* isolate,
                       EnvCallback cb,
                       const EnvRunOptions& opts) {
@@ -82,27 +102,30 @@ void RunInEnvironment(v8::Isolate* isolate,
   node::Environment* env =
       node::CreateEnvironment(isolate_data, context, args, exec_args, opts.flags);
 
-  // Run Node's bootstrap (no entry script), to get a proper process/env.
+  // Bootstrap Node (no entry script) so N-API/require/etc. are ready.
   node::LoadEnvironment(env, const_cast<char*>(""));
 
   // ---- caller's code inside a fully initialized Environment ----
   cb(env, context);
   // -------------------------------------------------------------
 
-  // Give any microtasks/callbacks a brief chance to run (bounded).
   auto* platform = Runtime::Get().platform();
   auto* loop     = Runtime::Get().loop();
-  for (int i = 0; i < opts.max_pumps; ++i) {
-    platform->DrainTasks(isolate);
-    uv_run(loop, UV_RUN_NOWAIT);
-    isolate->PerformMicrotaskCheckpoint();
-  }
+
+  // Give async work a brief bounded chance (if requested)
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+
+  // Proper Node shutdown: beforeExit → AtExit → Stop, with small pumps in-between
+  node::EmitBeforeExit(env);
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+
+  node::RunAtExit(env);
+
+  node::Stop(env);
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   node::FreeEnvironment(env);
   node::FreeIsolateData(isolate_data);
-
-  platform->DrainTasks(isolate);
-  uv_run(loop, UV_RUN_NOWAIT);
 }
 
 // ---------- RunEnvString ----------
@@ -126,62 +149,55 @@ void RunEnvString(v8::Isolate* isolate,
   node::Environment* env =
       node::CreateEnvironment(isolate_data, context, args, exec_args, opts.flags);
 
+  // Load & run entrypoint (may be empty string)
   node::LoadEnvironment(env, env_js ? const_cast<char*>(env_js) : const_cast<char*>(""));
 
   auto* platform = Runtime::Get().platform();
   auto* loop     = Runtime::Get().loop();
 
-  for (int i = 0; i < opts.max_pumps; ++i) {
-    platform->DrainTasks(isolate);
-    uv_run(loop, UV_RUN_NOWAIT);
-    isolate->PerformMicrotaskCheckpoint();
-  }
+  // Optional bounded pumps (most fuzzers will leave this at 0)
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+
+  // Proper Node shutdown sequence to avoid leaks/stalls
+  node::EmitBeforeExit(env);
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+
+  node::RunAtExit(env);
+
+  node::Stop(env);
+  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   node::FreeEnvironment(env);
   node::FreeIsolateData(isolate_data);
-
-  platform->DrainTasks(isolate);
-  uv_run(loop, UV_RUN_NOWAIT);
 }
 
 // ---------- Shared libFuzzer initializer (process-wide) ----------
 extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
-  // Keep Node from picking up host flags
   uv_os_unsetenv("NODE_OPTIONS");
 
-  // === Mirror cctest NodeTestEnvironment::SetUp ===
-  g_tracing_agent = std::make_unique<node::tracing::Agent>();
-  node::tracing::TraceEventHelper::SetAgent(g_tracing_agent.get());
-  node::tracing::TracingController* tracing_controller =
-      g_tracing_agent->GetTracingController();
-
-  static constexpr int kV8ThreadPoolSize = 4;
-  g_platform = std::make_unique<node::NodePlatform>(kV8ThreadPoolSize, tracing_controller);
+  // Small, fast platform with no tracing (saves CPU/threads)
+  static constexpr int kV8ThreadPoolSize = 1;
+  g_platform = std::make_unique<node::NodePlatform>(kV8ThreadPoolSize, /*tracing_controller=*/nullptr);
   v8::V8::InitializePlatform(g_platform.get());
 
+  // cppgc + V8 init (once per process)
   cppgc::InitializeProcess(g_platform->GetPageAllocator());
-
-  // Allow flags per test if ever needed (same as cctest)
-  v8::V8::SetFlagsFromString("--no-freeze-flags-after-init");
-
   v8::V8::Initialize();
 
-  // Abseil deadlock detection disabled (as in cctest)
-  absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kIgnore);
+  // Initialize the process uv loop we pass into IsolateData
+  (void)uv_loop_init(&g_loop);
 
-  // Initialize libuv loop we use for isolate data
-  if (uv_loop_init(&g_loop) != 0) {
-    // Optional: handle error; usually safe to proceed in fuzzer context
-  }
-
-  // === Node per-process initialization (public API) ===
-  // Use flags bundle that tells Node we already initialized V8 & platform, etc.
+  // Node per-process initialization (public API).
+  // Use flags that tell Node we've handled V8/platform/etc.
   std::vector<std::string> node_argv{ "fuzz_env" };
   (void) node::InitializeOncePerProcess(
       node_argv,
       node::ProcessInitializationFlags::kLegacyInitializeNodeWithArgsBehavior);
 
-  // Ensure we clean up at process exit (like cctest TearDown)
+  // Process-wide allocator, reused for all isolates
+  g_allocator.reset(node::CreateArrayBufferAllocator());
+
+  // Ensure cleanup at process exit
   std::atexit(&GlobalShutdown);
   return 0;
 }

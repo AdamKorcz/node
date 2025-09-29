@@ -18,6 +18,8 @@ const _ = blob.text();
 
   fuzz::IsolateScope iso;
   if (!iso.ok()) return 0;
-  fuzz::RunEnvString(iso.isolate(), js.c_str());
+  fuzz::EnvRunOptions opts;
+  opts.max_pumps = 4;
+  fuzz::RunEnvString(iso.isolate(), js.c_str(), opts);
   return 0;
 }

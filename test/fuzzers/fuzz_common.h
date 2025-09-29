@@ -1,9 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include "node.h"
 #include "node_internals.h"
@@ -14,11 +14,12 @@
 
 namespace fuzz {
 
-// Process-wide plumbing (does NOT hold JS state between inputs)
+// Process-wide plumbing (does NOT hold JS/Environment state between inputs)
 struct Runtime {
-  static Runtime& Get();              // singleton accessor
-  uv_loop_t* loop();                  // uv loop used by Node
-  node::NodePlatform* platform();     // V8/Node platform
+  static Runtime& Get();                 // singleton accessor
+  uv_loop_t* loop();                     // process uv loop used by Node
+  node::NodePlatform* platform();        // V8/Node platform
+  node::ArrayBufferAllocator* allocator(); // process-wide ArrayBuffer allocator
 private:
   Runtime() = default;
 };
@@ -32,25 +33,24 @@ class IsolateScope {
   bool ok() const { return isolate_ != nullptr; }
  private:
   v8::Isolate* isolate_{nullptr};
-  std::unique_ptr<node::ArrayBufferAllocator,
-                  decltype(&node::FreeArrayBufferAllocator)> allocator_{
-      node::CreateArrayBufferAllocator(), &node::FreeArrayBufferAllocator};
 };
 
-// Options for the one-off environment runner
+// Options for the one-off environment runners
 struct EnvRunOptions {
   node::EnvironmentFlags::Flags flags = node::EnvironmentFlags::kDefaultFlags;
   bool print_js_to_stdout = false;
-  int  max_pumps = 8;  // pump foreground tasks + libuv + microtasks up to N rounds
+  // Pump foreground tasks + libuv + microtasks up to N rounds.
+  // Most fuzzers are synchronous; override to small N (e.g., 2–4) in async fuzzers.
+  int  max_pumps = 0;
 };
 
-// Create a fresh Context/Environment, run JS, pump a bit, then tear down.
+// Evaluate a JS program string inside a fresh Context/Environment, then tear down.
 void RunEnvString(v8::Isolate* isolate,
                   const char* env_js,
                   const EnvRunOptions& opts = {});
 
-// Let callers run arbitrary code inside a fresh Context + Environment.
-// We'll LoadEnvironment("") so Node's bootstrap runs, then invoke the callback.
+// Run arbitrary code inside a fresh Context/Environment (after Node bootstrap),
+// then perform a proper Node shutdown and tear down.
 using EnvCallback = std::function<void(node::Environment*, v8::Local<v8::Context>)>;
 
 void RunInEnvironment(v8::Isolate* isolate,
