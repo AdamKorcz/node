@@ -1073,6 +1073,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_quic_token.cc',
       ],
       'conditions': [
@@ -1119,6 +1120,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_v8_deserialize.cc',
       ],
       'conditions': [
@@ -1165,6 +1167,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_blob.cc',
       ],
       'conditions': [
@@ -1211,6 +1214,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_buffer_compare.cc',
       ],
       'conditions': [
@@ -1257,6 +1261,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_buffer_equals.cc',
       ],
       'conditions': [
@@ -1303,6 +1308,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_buffer_includes.cc',
       ],
       'conditions': [
@@ -1349,6 +1355,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_cipheriv.cc',
       ],
       'conditions': [
@@ -1395,6 +1402,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_zlib_brotliCompress.cc',
       ],
       'conditions': [
@@ -1441,6 +1449,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_zlib_brotliDecompress.cc',
       ],
       'conditions': [
@@ -1487,6 +1496,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_zlib_createBrotliDecompress.cc',
       ],
       'conditions': [
@@ -1533,6 +1543,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_zlib_gzip_createUnzip.cc',
       ],
       'conditions': [
@@ -1579,6 +1590,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_querystring_parse.cc',
       ],
       'conditions': [
@@ -1625,6 +1637,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_string_decoder.cc',
       ],
       'conditions': [
@@ -1671,6 +1684,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_resolve.cc',
       ],
       'conditions': [
@@ -1717,6 +1731,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_extname.cc',
       ],
       'conditions': [
@@ -1763,6 +1778,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_parse.cc',
       ],
       'conditions': [
@@ -1809,6 +1825,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_normalize.cc',
       ],
       'conditions': [
@@ -1855,6 +1872,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_basename.cc',
       ],
       'conditions': [
@@ -1901,6 +1919,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_isAbsolute.cc',
       ],
       'conditions': [
@@ -1947,6 +1966,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_relative.cc',
       ],
       'conditions': [
@@ -1993,6 +2013,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_dirname.cc',
       ],
       'conditions': [
@@ -2039,6 +2060,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_join.cc',
       ],
       'conditions': [
@@ -2085,6 +2107,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_toNamespacedPath.cc',
       ],
       'conditions': [
@@ -2131,6 +2154,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_path_format.cc',
       ],
       'conditions': [
@@ -2177,6 +2201,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_fs_write_open_read.cc',
       ],
       'conditions': [
@@ -2223,6 +2248,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_fs_write_read_append.cc',
       ],
       'conditions': [
@@ -2269,6 +2295,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_tls_socket_request.cc',
       ],
       'conditions': [
@@ -2315,6 +2342,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_sign_verify.cc',
       ],
       'conditions': [
@@ -2361,6 +2389,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_diffieHellmanDER.cc',
       ],
       'conditions': [
@@ -2407,6 +2436,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_diffieHellmanPEM.cc',
       ],
       'conditions': [
@@ -2453,6 +2483,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_diffieHellmanJWK.cc',
       ],
       'conditions': [
@@ -2499,6 +2530,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_createPrivateKeyDER.cc',
       ],
       'conditions': [
@@ -2545,6 +2577,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_createPrivateKeyPEM.cc',
       ],
       'conditions': [
@@ -2591,6 +2624,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_createPrivateKeyJWK.cc',
       ],
       'conditions': [
@@ -2637,6 +2671,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_httpparser1.cc',
       ],
       'conditions': [
@@ -2683,6 +2718,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_stream1.cc',
       ],
       'conditions': [
@@ -2729,6 +2765,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_x509.cc',
       ],
       'conditions': [
@@ -2774,6 +2811,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_env.cc',
       ],
       'conditions': [
@@ -2817,6 +2855,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_ClientHelloParser.cc',
       ],
       'conditions': [
@@ -2867,6 +2906,7 @@
       ],
       'sources': [
         'src/node_snapshot_stub.cc',
+        'test/fuzzers/fuzz_common.cc',
         'test/fuzzers/fuzz_strings.cc',
       ],
       'conditions': [
