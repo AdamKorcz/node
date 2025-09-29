@@ -1,6 +1,6 @@
 #include <cstdint>
 #include <string>
-#include <fuzzer/FuzzedDataProvider.h>
+#include "fuzzer/FuzzedDataProvider.h"
 
 #include "fuzz_common.h"
 #include "fuzz_js_format.h"
