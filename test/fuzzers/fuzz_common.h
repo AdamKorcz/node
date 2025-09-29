@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "node.h"
 #include "node_internals.h"
@@ -47,5 +48,13 @@ struct EnvRunOptions {
 void RunEnvString(v8::Isolate* isolate,
                   const char* env_js,
                   const EnvRunOptions& opts = {});
+
+// Let callers run arbitrary code inside a fresh Context + Environment.
+// We'll LoadEnvironment("") so Node's bootstrap runs, then invoke the callback.
+using EnvCallback = std::function<void(node::Environment*, v8::Local<v8::Context>)>;
+
+void RunInEnvironment(v8::Isolate* isolate,
+                      EnvCallback cb,
+                      const EnvRunOptions& opts = {});
 
 }  // namespace fuzz

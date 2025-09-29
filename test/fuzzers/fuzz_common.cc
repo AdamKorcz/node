@@ -65,6 +65,46 @@ IsolateScope::~IsolateScope() {
   isolate_ = nullptr;
 }
 
+void RunInEnvironment(v8::Isolate* isolate,
+                      EnvCallback cb,
+                      const EnvRunOptions& opts) {
+  // Fresh handle scope + context per invocation (stateless across inputs).
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = node::NewContext(isolate);
+  v8::Context::Scope context_scope(context);
+
+  node::IsolateData* isolate_data =
+      node::CreateIsolateData(isolate, Runtime::Get().loop(), Runtime::Get().platform());
+
+  std::vector<std::string> args{ "node" };
+  std::vector<std::string> exec_args;
+
+  node::Environment* env =
+      node::CreateEnvironment(isolate_data, context, args, exec_args, opts.flags);
+
+  // Run Node's bootstrap (no entry script), to get a proper process/env.
+  node::LoadEnvironment(env, const_cast<char*>(""));
+
+  // ---- caller's code inside a fully initialized Environment ----
+  cb(env, context);
+  // -------------------------------------------------------------
+
+  // Give any microtasks/callbacks a brief chance to run (bounded).
+  auto* platform = Runtime::Get().platform();
+  auto* loop     = Runtime::Get().loop();
+  for (int i = 0; i < opts.max_pumps; ++i) {
+    platform->DrainTasks(isolate);
+    uv_run(loop, UV_RUN_NOWAIT);
+    isolate->PerformMicrotaskCheckpoint();
+  }
+
+  node::FreeEnvironment(env);
+  node::FreeIsolateData(isolate_data);
+
+  platform->DrainTasks(isolate);
+  uv_run(loop, UV_RUN_NOWAIT);
+}
+
 // ---------- RunEnvString ----------
 void RunEnvString(v8::Isolate* isolate,
                   const char* env_js,
