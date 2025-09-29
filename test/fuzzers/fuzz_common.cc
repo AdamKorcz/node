@@ -177,19 +177,20 @@ extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
   g_platform = std::make_unique<node::NodePlatform>(kV8ThreadPoolSize, /*tracing_controller=*/nullptr);
   v8::V8::InitializePlatform(g_platform.get());
 
+  // *** IMPORTANT ORDERING FIX ***
+  // Parse Node/V8 flags BEFORE V8 is initialized to avoid
+  // "Check failed: !IsFrozen()" when Node sets V8 flags.
+  std::vector<std::string> node_argv{ "fuzz_env" };
+  (void) node::InitializeOncePerProcess(
+      node_argv,
+      node::ProcessInitializationFlags::kLegacyInitializeNodeWithArgsBehavior);
+
   // cppgc + V8 init (once per process)
   cppgc::InitializeProcess(g_platform->GetPageAllocator());
   v8::V8::Initialize();
 
   // Initialize the process uv loop we pass into IsolateData
   (void)uv_loop_init(&g_loop);
-
-  // Node per-process initialization (public API).
-  // Use flags that tell Node we've handled V8/platform/etc.
-  std::vector<std::string> node_argv{ "fuzz_env" };
-  (void) node::InitializeOncePerProcess(
-      node_argv,
-      node::ProcessInitializationFlags::kLegacyInitializeNodeWithArgsBehavior);
 
   // Process-wide allocator, reused for all isolates
   g_allocator.reset(node::CreateArrayBufferAllocator());
