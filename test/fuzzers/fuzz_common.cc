@@ -1,5 +1,7 @@
 #include "fuzz_common.h"
 
+#include <cstdlib>  // std::atexit
+
 #include "v8.h"
 #include "uv.h"
 
@@ -16,7 +18,7 @@ std::unique_ptr<node::ArrayBufferAllocator,
 uv_loop_t                              g_loop;
 
 void GlobalShutdown() {
-  // Mirror cctest-ish teardown order
+  // Teardown order similar to test/cctest/node_test_fixture.cc
   cppgc::ShutdownProcess();
   v8::V8::Dispose();
   v8::V8::DisposePlatform();
@@ -26,9 +28,7 @@ void GlobalShutdown() {
   }
   g_allocator.reset();
 
-  // uv_loop_close() may fail if any process-scoped handles remain; fuzzers usually skip it.
-  // If your loop is guaranteed quiescent, you can enable:
-  // uv_loop_close(&g_loop);
+  // uv_loop_close(&g_loop);  // Optional if you guarantee no remaining handles.
 }
 }  // namespace
 
@@ -116,7 +116,7 @@ void RunInEnvironment(v8::Isolate* isolate,
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   // Proper Node shutdown: beforeExit → AtExit → Stop, with small pumps in-between
-  node::EmitBeforeExit(env);
+  env->RunBeforeExitCallbacks();
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   node::RunAtExit(env);
@@ -159,7 +159,7 @@ void RunEnvString(v8::Isolate* isolate,
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   // Proper Node shutdown sequence to avoid leaks/stalls
-  node::EmitBeforeExit(env);
+  env->RunBeforeExitCallbacks();
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
   node::RunAtExit(env);
