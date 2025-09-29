@@ -115,9 +115,9 @@ void RunInEnvironment(v8::Isolate* isolate,
   // Give async work a brief bounded chance (if requested)
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
-  // Proper Node shutdown: beforeExit → AtExit → Stop, with small pumps in-between
-  env->RunBeforeExitCallbacks();
-  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+  // Older/newer Node trees differ in how 'beforeExit' is exposed. To stay
+  // portable, we skip explicit 'beforeExit' emission here and rely on:
+  //   bounded pump → RunAtExit → Stop → final pump.
 
   node::RunAtExit(env);
 
@@ -158,10 +158,7 @@ void RunEnvString(v8::Isolate* isolate,
   // Optional bounded pumps (most fuzzers will leave this at 0)
   if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
 
-  // Proper Node shutdown sequence to avoid leaks/stalls
-  env->RunBeforeExitCallbacks();
-  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
-
+  // Portable shutdown: bounded pump → RunAtExit → Stop → final pump.
   node::RunAtExit(env);
 
   node::Stop(env);
