@@ -109,31 +109,45 @@ extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
   // Keep the process environment clean for Node/V8.
   uv_os_unsetenv("NODE_OPTIONS");
 
+  // 1) Let Node parse args / set up per-process state, but skip its V8/platform init.
   std::vector<std::string> node_argv{ "fuzz_env" };
-  std::vector<std::string> exec_argv;
-  std::vector<std::string> errors;
-  node::InitializeNodeWithArgs(&node_argv, &exec_argv, &errors);
+  auto init = node::InitializeOncePerProcess(
+      node_argv,
+      node::ProcessInitializationFlags::kLegacyInitializeNodeWithArgsBehavior);
 
-  // Tracing is optional; if these headers aren't available, you can set the
-  // tracing controller to nullptr and skip TraceEventHelper.
-  g_tracing_agent = std::make_unique<node::tracing::Agent>();
-  node::tracing::TraceEventHelper::SetAgent(g_tracing_agent.get());
-  auto* tracing_controller = g_tracing_agent->GetTracingController();
+  // If you want, you can check init->early_return() or init->exit_code() here.
 
-  // Init loop and platform
-  if (uv_loop_init(&g_loop) != 0) {
-    // If you prefer, handle the error or abort; fuzzers usually just proceed.
+  // 2) Initialize libuv loop for our embedder platform.
+  if (uv_loop_init(Runtime::Get().loop()) != 0) {
+    // Optional: handle error; fuzzers usually proceed or abort.
   }
 
+  // 3) Create the platform we’ll pass to NewIsolate() & register with V8.
+  // If you don’t care about tracing, you can pass nullptr as controller.
+  std::unique_ptr<node::tracing::Agent> tracing_agent;
+  tracing_agent = std::make_unique<node::tracing::Agent>();
+  node::tracing::TraceEventHelper::SetAgent(tracing_agent.get());
+  auto* tracing_controller = tracing_agent->GetTracingController();
+
+  // Store in your globals/singletons (not shown here) —
+  // e.g., g_tracing_agent = std::move(tracing_agent); g_platform = ...
   constexpr int kV8ThreadPoolSize = 4;
+  // NOTE: NodePlatform derives from MultiIsolatePlatform; it’s fine to store as that type.
+  extern std::unique_ptr<node::NodePlatform> g_platform;
+  extern std::unique_ptr<node::tracing::Agent> g_tracing_agent;
+  g_tracing_agent = std::move(tracing_agent);
   g_platform = std::make_unique<node::NodePlatform>(kV8ThreadPoolSize, tracing_controller);
 
   v8::V8::InitializePlatform(g_platform.get());
-  // If your build has cppgc available and Node expects it, you may enable:
+
+  // cppgc is optional; enable only if your build includes it and Node expects it.
+  // #include "cppgc/common.h" if available.
   // cppgc::InitializeProcess(g_platform->GetPageAllocator());
+
   v8::V8::Initialize();
 
   return 0;
 }
+
 
 }  // namespace fuzz
