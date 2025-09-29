@@ -1064,6 +1064,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1111,6 +1112,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1158,6 +1160,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1205,6 +1208,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1252,6 +1256,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1299,6 +1304,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1346,6 +1352,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1393,6 +1400,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1440,6 +1448,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1487,6 +1496,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1534,6 +1544,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1581,6 +1592,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1628,6 +1640,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1675,6 +1688,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1722,6 +1736,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1769,6 +1784,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1816,6 +1832,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1863,6 +1880,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1910,6 +1928,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -1957,6 +1976,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2004,6 +2024,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2051,6 +2072,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2098,6 +2120,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2145,6 +2168,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2192,6 +2216,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2239,6 +2264,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2286,6 +2312,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2333,6 +2360,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2380,6 +2408,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2427,6 +2456,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2474,6 +2504,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2521,6 +2552,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2568,6 +2600,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2615,6 +2648,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2662,6 +2696,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2709,6 +2744,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2756,6 +2792,7 @@
         'deps/uv/include',
         'deps/uvwasi/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2802,6 +2839,7 @@
         'deps/cares/include',
         'deps/uv/include',
         'test/cctest',
+        'test/fuzzers',
       ],
 
       'defines': [
@@ -2847,6 +2885,7 @@
         'deps/cares/include',
         'deps/uv/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
@@ -2897,6 +2936,7 @@
         'deps/cares/include',
         'deps/uv/include',
         'test/cctest',
+        'test/fuzzers',
       ],
       'defines': [
         'NODE_ARCH="<(target_arch)"',
