@@ -1,9 +1,10 @@
 #include "fuzz_common.h"
 
+#include <cassert>
 #include <cstdlib>   // std::atexit
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "v8.h"
 #include "uv.h"
@@ -11,42 +12,56 @@
 // cppgc platform init/shutdown like cctest does
 #include "cppgc/platform.h"
 
+#if defined(__GLIBC__)
+#include <malloc.h>  // malloc_trim
+#endif
+
 namespace fuzz {
 namespace {
 
-// Process-wide plumbing (no JS/Environment state lives here)
-std::unique_ptr<node::NodePlatform>   g_platform;
+// Process-wide platform. No JS/Environment state lives here.
+std::unique_ptr<node::NodePlatform> g_platform;
+
+// Kept for API/back-compat; no longer used as the main allocator.
+// (We now create a per-isolate allocator instead.)
 std::unique_ptr<node::ArrayBufferAllocator,
                 decltype(&node::FreeArrayBufferAllocator)> g_allocator{
-    nullptr, &node::FreeArrayBufferAllocator};  // kept for ABI/back-compat; unused now
-uv_loop_t                              g_loop;
+    nullptr, &node::FreeArrayBufferAllocator};
 
-// Per-isolate ArrayBuffer allocators so memory returns to the OS when an
-// isolate is destroyed (prevents long-run RSS creep).
+// Each Isolate gets its own ArrayBuffer allocator so buffer pages are
+// returned to the OS when the isolate dies (prevents long-run RSS creep).
 using ABAUnique =
     std::unique_ptr<node::ArrayBufferAllocator, decltype(&node::FreeArrayBufferAllocator)>;
+
 static std::unordered_map<v8::Isolate*, ABAUnique> g_isolate_allocators;
 
-// Helper: bounded pump of foreground tasks + libuv + microtasks
-static inline void BoundedPump(v8::Isolate* isolate,
-                               int max_pumps,
-                               node::NodePlatform* platform,
-                               uv_loop_t* loop) {
-  for (int i = 0; i < max_pumps; ++i) {
-    bool progressed = false;
-    platform->DrainTasks(isolate);
-    progressed |= (uv_run(loop, UV_RUN_NOWAIT) != 0);
-    isolate->PerformMicrotaskCheckpoint();
-    if (!progressed) break;
-  }
+// Thread-local pointer to the *current* libuv loop (owned by IsolateScope).
+// This lets Runtime::loop() keep the same signature while we swap per-iter loops.
+static thread_local uv_loop_t* t_loop = nullptr;
+
+// Helper: run Node platform tasks + libuv + microtasks for a bounded number
+// of iterations. Returns true if any progress was made.
+static inline bool OnePump(v8::Isolate* isolate,
+                           node::NodePlatform* platform,
+                           uv_loop_t* loop) {
+  bool progressed = false;
+  platform->DrainTasks(isolate);
+  progressed |= (uv_run(loop, UV_RUN_NOWAIT) != 0);
+  isolate->PerformMicrotaskCheckpoint();
+  return progressed;
 }
 
-// Always run a short final drain after Stop() so libuv close callbacks free
-// memory and platform task queues empty.
-static inline void FinalDrain(v8::Isolate* isolate,
-                              node::NodePlatform* platform,
-                              uv_loop_t* loop) {
-  BoundedPump(isolate, /*max_pumps=*/8, platform, loop);
+// After Stop() we *must* give the close queue time to run so memory is freed.
+// Drain up to `max_spins`, or stop earlier once the loop is idle (no pending
+// or active handles and no platform work).
+static inline void DrainUntilIdle(v8::Isolate* isolate,
+                                  node::NodePlatform* platform,
+                                  uv_loop_t* loop,
+                                  int max_spins = 256) {
+  for (int i = 0; i < max_spins; ++i) {
+    const bool progressed = OnePump(isolate, platform, loop);
+    if (!progressed && !uv_loop_alive(loop)) break;
+  }
 }
 
 void GlobalShutdown() {
@@ -69,11 +84,8 @@ void GlobalShutdown() {
   // Free NodePlatform instance.
   g_platform.reset();
 
-  // Process-wide allocator (unused in the new flow, but free it if present).
+  // Any legacy process-wide allocator (unused now) — free it if present.
   g_allocator.reset();
-
-  // Important for correctness and for sanitizers at process exit.
-  uv_loop_close(&g_loop);
 }
 
 }  // namespace
@@ -83,13 +95,23 @@ Runtime& Runtime::Get() {
   static Runtime rt;
   return rt;
 }
-uv_loop_t* Runtime::loop() { return &g_loop; }
+uv_loop_t* Runtime::loop() { return t_loop; }  // per-iteration loop
 node::NodePlatform* Runtime::platform() { return g_platform.get(); }
-// Kept for API compatibility; per-isolate allocators are now used instead.
+
+// Kept for API compatibility; per-isolate allocators are used instead.
 node::ArrayBufferAllocator* Runtime::allocator() { return g_allocator.get(); }
 
 // ---------- IsolateScope ----------
 IsolateScope::IsolateScope() {
+  // Create a fresh libuv loop *per iteration* so libuv’s internal arrays
+  // don’t accumulate capacity across runs.
+  loop_ = std::make_unique<uv_loop_t>();
+  if (uv_loop_init(loop_.get()) != 0) {
+    loop_.reset();
+    return;
+  }
+  t_loop = loop_.get();
+
   // Create a fresh ArrayBuffer allocator for this isolate so buffers/pages
   // can be released back to the OS when the isolate dies.
   ABAUnique aba{ node::CreateArrayBufferAllocator(), &node::FreeArrayBufferAllocator };
@@ -104,11 +126,23 @@ IsolateScope::IsolateScope() {
     // lives exactly as long as the isolate.
     g_isolate_allocators.emplace(isolate_, ABAUnique{ std::move(aba) });
     isolate_->Enter();
+  } else {
+    // If we failed to create an isolate, clean up the loop.
+    uv_loop_close(loop_.get());
+    loop_.reset();
+    t_loop = nullptr;
   }
 }
 
 IsolateScope::~IsolateScope() {
-  if (!isolate_) return;
+  if (!isolate_) {
+    if (loop_) {
+      uv_loop_close(loop_.get());
+      loop_.reset();
+      t_loop = nullptr;
+    }
+    return;
+  }
 
   auto* platform = Runtime::Get().platform();
 
@@ -122,6 +156,29 @@ IsolateScope::~IsolateScope() {
   g_isolate_allocators.erase(isolate_);
 
   isolate_ = nullptr;
+
+  // We expect the loop to be idle now; close it and free its internal arrays.
+  // If this ever asserts, it means something kept handles alive too long.
+  int close_rc = uv_loop_close(loop_.get());
+  (void)close_rc;
+  // In fuzzing we prefer to be assertive; if needed, relax this to a drain+close.
+  assert(close_rc == 0 && "uv_loop_close failed: some handles still alive");
+
+  loop_.reset();
+  t_loop = nullptr;
+
+#if defined(__GLIBC__)
+  // Help the system RSS keep up with freed memory between iterations.
+  malloc_trim(0);
+#endif
+}
+
+bool IsolateScope::ok() const {
+  return isolate_ != nullptr && loop_ != nullptr;
+}
+
+v8::Isolate* IsolateScope::isolate() const {
+  return isolate_;
 }
 
 // ---------- RunInEnvironment ----------
@@ -153,14 +210,18 @@ void RunInEnvironment(v8::Isolate* isolate,
   auto* loop     = Runtime::Get().loop();
 
   // Optional bounded chance for async work before shutdown (caller-controlled).
-  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+  if (opts.max_pumps > 0) {
+    for (int i = 0; i < opts.max_pumps; ++i) {
+      if (!OnePump(isolate, platform, loop)) break;
+    }
+  }
 
-  // Portable shutdown: bounded pump → RunAtExit → Stop → final pump.
+  // Portable shutdown: RunAtExit → Stop → drain-until-idle → free.
   node::RunAtExit(env);
   node::Stop(env);
 
   // Unconditional final drain so uv_close completions free memory.
-  FinalDrain(isolate, platform, loop);
+  DrainUntilIdle(isolate, platform, loop);
 
   node::FreeEnvironment(env);
   node::FreeIsolateData(isolate_data);
@@ -193,15 +254,19 @@ void RunEnvString(v8::Isolate* isolate,
   auto* platform = Runtime::Get().platform();
   auto* loop     = Runtime::Get().loop();
 
-  // Optional bounded pumps (most fuzzers will leave this at 0)
-  if (opts.max_pumps > 0) BoundedPump(isolate, opts.max_pumps, platform, loop);
+  // Optional pre-stop pump (caller-controlled).
+  if (opts.max_pumps > 0) {
+    for (int i = 0; i < opts.max_pumps; ++i) {
+      if (!OnePump(isolate, platform, loop)) break;
+    }
+  }
 
-  // Portable shutdown: bounded pump → RunAtExit → Stop → final pump.
+  // Portable shutdown: RunAtExit → Stop → drain-until-idle → free.
   node::RunAtExit(env);
   node::Stop(env);
 
   // Unconditional final drain so uv_close completions free memory.
-  FinalDrain(isolate, platform, loop);
+  DrainUntilIdle(isolate, platform, loop);
 
   node::FreeEnvironment(env);
   node::FreeIsolateData(isolate_data);
@@ -229,11 +294,11 @@ extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
   cppgc::InitializeProcess(g_platform->GetPageAllocator());
   v8::V8::Initialize();
 
-  // Initialize the process uv loop we pass into IsolateData
-  (void)uv_loop_init(&g_loop);
+  // NOTE: libuv loop is now per-iteration (owned by IsolateScope), so we do
+  // not initialize a process-wide loop here.
 
-  // Note: we no longer pre-create a process-wide ArrayBuffer allocator.
-  // Each Isolate gets its own allocator (see IsolateScope).
+  // We also no longer pre-create a process-wide ArrayBuffer allocator. Each
+  // Isolate gets its own allocator (see IsolateScope).
 
   // Ensure cleanup at process exit
   std::atexit(&GlobalShutdown);
