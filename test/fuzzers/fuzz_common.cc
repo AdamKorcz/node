@@ -242,14 +242,6 @@ IsolateScope::~IsolateScope() {
 #endif
 }
 
-bool IsolateScope::ok() const {
-  return isolate_ != nullptr;
-}
-
-v8::Isolate* IsolateScope::isolate() const {
-  return isolate_;
-}
-
 // ----------------------- Public helpers (persistent env) -----------------------
 
 void RunEnvString(v8::Isolate* /*unused*/,
