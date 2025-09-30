@@ -69,6 +69,7 @@ static inline void DrainUntilIdle(v8::Isolate* isolate,
   }
 }
 
+// Build (once) a comparator that DOES NOT copy: Buffer.from(ArrayBuffer) shares memory.
 static void BuildBufCmpOnce() {
   if (!g_bufcmp_fn.IsEmpty()) return;
 
@@ -77,27 +78,22 @@ static void BuildBufCmpOnce() {
   v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
   v8::Context::Scope cs(ctx);
 
-  // Pre-compiled comparator. Using Uint8Array view avoids exposing host stuff.
+  // Share the underlying ArrayBuffer; avoid Uint8Array -> Buffer copy.
+  // Docs: Buffer.from(arrayBuffer[, byteOffset[, length]]) shares memory.
   constexpr const char* kSrc = R"JS(
     (function(a, b) {
-      const u8a = new Uint8Array(a);
-      const u8b = new Uint8Array(b);
-      return Buffer.compare(Buffer.from(u8a), Buffer.from(u8b));
+      const bufa = Buffer.from(a);
+      const bufb = Buffer.from(b);
+      return Buffer.compare(bufa, bufb);
     })
   )JS";
 
   v8::Local<v8::String> src;
-  if (!v8::String::NewFromUtf8(g_iso, kSrc, v8::NewStringType::kNormal).ToLocal(&src)) {
-    return;
-  }
+  if (!v8::String::NewFromUtf8(g_iso, kSrc, v8::NewStringType::kNormal).ToLocal(&src)) return;
   v8::Local<v8::Script> script;
-  if (!v8::Script::Compile(ctx, src).ToLocal(&script)) {
-    return;
-  }
+  if (!v8::Script::Compile(ctx, src).ToLocal(&script)) return;
   v8::Local<v8::Value> fn_val;
-  if (!script->Run(ctx).ToLocal(&fn_val)) {
-    return;
-  }
+  if (!script->Run(ctx).ToLocal(&fn_val)) return;
   g_bufcmp_fn.Reset(g_iso, fn_val.As<v8::Function>());
 }
 
@@ -319,7 +315,7 @@ void RunBufCompare(const uint8_t* a, size_t alen,
   // Periodically help the allocator return memory to the OS.
   static uint64_t iter = 0;
   if ((++iter & 0xFF) == 0) {  // every 256 iters
-    // Use a production-safe GC request; no --expose-gc required.
+    // Safe GC hint (no --expose-gc required).
     g_iso->LowMemoryNotification();
   #if defined(__GLIBC__)
     malloc_trim(0);
