@@ -9,20 +9,9 @@
 #include "node_internals.h"
 #include "node_platform.h"
 #include "env-inl.h"
-#include "libplatform/libplatform.h"
 #include "uv.h"
 
 namespace fuzz {
-
-// Process-wide plumbing (does NOT hold JS/Environment state between inputs)
-struct Runtime {
-  static Runtime& Get();                 // singleton accessor
-  uv_loop_t* loop();                     // process uv loop used by Node
-  node::NodePlatform* platform();        // V8/Node platform
-  node::ArrayBufferAllocator* allocator(); // process-wide ArrayBuffer allocator
-private:
-  Runtime() = default;
-};
 
 // RAII per-input isolate (fresh JS heap each call)
 class IsolateScope {

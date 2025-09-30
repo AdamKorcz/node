@@ -1,8 +1,6 @@
 #include "fuzz_common.h"
 
-#include <cassert>
 #include <cstdlib>   // std::atexit
-#include <cstring>
 #include <string>
 #include <vector>
 
@@ -197,30 +195,6 @@ static void InitializePersistentEnvOnce() {
 
 }  // namespace
 
-// ------------------------- Runtime (header-compatible) -------------------------
-
-Runtime& Runtime::Get() {
-  static Runtime rt;
-  return rt;
-}
-
-uv_loop_t* Runtime::loop() {
-  // Our persistent loop; ensure initialized so callers can safely use it.
-  InitializePersistentEnvOnce();
-  return &g_persist_loop;
-}
-
-node::NodePlatform* Runtime::platform() {
-  InitializePersistentEnvOnce();
-  return g_platform.get();
-}
-
-node::ArrayBufferAllocator* Runtime::allocator() {
-  // Kept for API compatibility; we use the persistent allocator.
-  InitializePersistentEnvOnce();
-  return g_persist_allocator.get();
-}
-
 // ------------------------ IsolateScope (lightweight façade) --------------------
 
 IsolateScope::IsolateScope() {
@@ -282,45 +256,6 @@ void RunInEnvironment(v8::Isolate* /*unused*/,
 
   cb(g_env, ctx);
   DrainUntilIdle(g_iso, g_platform.get(), &g_persist_loop);
-}
-
-// ----------------------------- New fast-path API ------------------------------
-
-void RunBufCompare(const uint8_t* a, size_t alen,
-                   const uint8_t* b, size_t blen) {
-  InitializePersistentEnvOnce();
-
-  v8::Isolate::Scope iso_scope(g_iso);
-  v8::HandleScope hs(g_iso);
-  v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
-  v8::Context::Scope cs(ctx);
-
-  BuildBufCmpOnce();
-  v8::Local<v8::Function> fn = g_bufcmp_fn.Get(g_iso);
-
-  // Create ArrayBuffers, copy the bytes into their backing stores.
-  v8::Local<v8::ArrayBuffer> abuf_a = v8::ArrayBuffer::New(g_iso, alen);
-  v8::Local<v8::ArrayBuffer> abuf_b = v8::ArrayBuffer::New(g_iso, blen);
-  if (alen) std::memcpy(abuf_a->GetBackingStore()->Data(), a, alen);
-  if (blen) std::memcpy(abuf_b->GetBackingStore()->Data(), b, blen);
-
-  v8::Local<v8::Value> argv[2] = { abuf_a, abuf_b };
-
-  v8::TryCatch tc(g_iso);
-  (void)fn->Call(ctx, v8::Undefined(g_iso), 2, argv);
-
-  // Stateless per-iteration cleanup: drain tasks & microtasks; no Stop/Free.
-  DrainUntilIdle(g_iso, g_platform.get(), &g_persist_loop);
-
-  // Periodically help the allocator return memory to the OS.
-  static uint64_t iter = 0;
-  if ((++iter & 0xFF) == 0) {  // every 256 iters
-    // Safe GC hint (no --expose-gc required).
-    g_iso->LowMemoryNotification();
-  #if defined(__GLIBC__)
-    malloc_trim(0);
-  #endif
-  }
 }
 
 }  // namespace fuzz
