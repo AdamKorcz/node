@@ -4,9 +4,8 @@
 #include "fuzzer/FuzzedDataProvider.h"
 
 #include "fuzz_common.h"
-#include "fuzz_js_format.h"
+#include "fuzz_js_precompiled.h"
 
-// OpenSSL/Node cipher names (from your original list).
 static const char* kCiphers[] = {
   "aes-128-cbc","aes-128-cbc-hmac-sha1","aes-128-cbc-hmac-sha256","aes-128-ccm","aes-128-cfb",
   "aes-128-cfb1","aes-128-cfb8","aes-128-ctr","aes-128-ecb","aes-128-gcm","aes-128-ocb","aes-128-ofb",
@@ -32,52 +31,48 @@ static const char* kCiphers[] = {
   "sm4-ecb","sm4-ofb"
 };
 
+namespace {
+v8::Global<v8::Function> g_fn;
+constexpr const char* kSrc = R"JS(
+  (function(alg, keyAB, ivAB, plain){
+    const crypto = require('crypto');
+    const key = Buffer.from(keyAB);
+    const iv  = Buffer.from(ivAB);
+    try {
+      const c = crypto.createCipheriv(alg, key, iv);
+      let enc = c.update(plain, 'utf8', 'hex'); enc += c.final('hex');
+      const d = crypto.createDecipheriv(alg, key, iv);
+      let out = d.update(enc, 'hex', 'utf8'); out += d.final('utf8');
+      return out;
+    } catch (e) {}
+  })
+)JS";
+} // namespace
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider prov(data, size);
-
-  // Key/IV sizes used by typical AES-256-CBC; your original code enforced these lengths.
   std::string enc_key = prov.ConsumeRandomLengthString();
-  if (enc_key.length() != 32) return 0;  // 32 bytes
+  if (enc_key.size() != 32) return 0;
   std::string vector  = prov.ConsumeRandomLengthString();
-  if (vector.length() != 16) return 0;   // 16 bytes
-  std::string textToEncrypt = prov.ConsumeRandomLengthString();
+  if (vector.size() != 16) return 0;
+  std::string text    = prov.ConsumeRandomLengthString();
 
-  // Simple quote/escape guards as in your originals (now centralized by the literal escaper).
-  const int min = 0;
-  const int max = static_cast<int>(sizeof(kCiphers) / sizeof(kCiphers[0])) - 1;
-  const int idx = prov.ConsumeIntegralInRange<int>(min, max);
-  const char* chosen = kCiphers[idx];
+  const int max = static_cast<int>(sizeof(kCiphers)/sizeof(kCiphers[0])) - 1;
+  const char* chosen = kCiphers[prov.ConsumeIntegralInRange<int>(0, max)];
 
-  static constexpr std::string_view kTemplate = R"(const crypto  = require('crypto');
-const enc_key = {0};
-const vector = {1};
-const textToEncrypt = {2};
-const cipherAlg = {3};
-function encrypt(text){
-  const cipher = crypto.createCipheriv(cipherAlg, Buffer.from(enc_key), Buffer.from(vector))
-  var encrypted = cipher.update(text, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return encrypted
-}
-function decrypt(text){
-  const decipher = crypto.createDecipheriv(cipherAlg, Buffer.from(enc_key), Buffer.from(vector));
-  let decrypted = decipher.update(text, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted
-}
-const crypted = encrypt(textToEncrypt);
-var _ = decrypt(crypted);
-)";
+  fuzz::RunInEnvironment(nullptr, [&](node::Environment*, v8::Local<v8::Context> ctx){
+    v8::Isolate* iso = ctx->GetIsolate();
+    if (!fuzz::precompiled::EnsureFn(iso, ctx, kSrc, g_fn)) return;
 
-  const std::string js = FormatJs(
-      kTemplate,
-      ToDoubleQuotedJsLiteral(enc_key),
-      ToDoubleQuotedJsLiteral(vector),
-      ToDoubleQuotedJsLiteral(textToEncrypt),
-      ToDoubleQuotedJsLiteral(chosen));
+    v8::Local<v8::String> alg;
+    if (!fuzz::precompiled::NewUtf8String(iso, std::string(chosen), &alg)) return;
+    auto keyAB = fuzz::precompiled::CopyToArrayBuffer(iso, enc_key.data(), enc_key.size());
+    auto ivAB  = fuzz::precompiled::CopyToArrayBuffer(iso, vector.data(), vector.size());
+    v8::Local<v8::String> plain;
+    if (!fuzz::precompiled::NewUtf8String(iso, text, &plain)) return;
 
-  fuzz::IsolateScope iso;
-  if (!iso.ok()) return 0;
-  fuzz::RunEnvString(iso.isolate(), js.c_str());
+    v8::Local<v8::Value> argv[4] = { alg, keyAB, ivAB, plain };
+    fuzz::precompiled::CallNoThrow(iso, ctx, g_fn.Get(iso), 4, argv);
+  });
   return 0;
 }

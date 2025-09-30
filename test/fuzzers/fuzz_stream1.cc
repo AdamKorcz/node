@@ -2,29 +2,36 @@
 #include <string>
 #include "fuzzer/FuzzedDataProvider.h"
 #include "fuzz_common.h"
-#include "fuzz_js_format.h"
+#include "fuzz_js_precompiled.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+namespace {
+v8::Global<v8::Function> g_fn;
+constexpr const char* kSrc = R"JS(
+  (function(s){
+    const Stream = require('stream');
+    const readable = new Stream.Readable({ read() {} });
+    readable.push(s);
+    readable.push(null);
+    // Return a Promise so the host can pump until idle.
+    return (async () => { for await (const c of readable) { c.toString(); } })();
+  })
+)JS";
+} // namespace
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size){
   FuzzedDataProvider p(data, size);
-  std::string chunk = p.ConsumeRemainingBytesAsString();
+  const std::string chunk = p.ConsumeRemainingBytesAsString();
 
-  static constexpr std::string_view kTemplate = R"(
-const Stream = require('stream');
-const readable = new Stream.Readable({ read() {} });
+  fuzz::RunInEnvironment(nullptr, [&](node::Environment*, v8::Local<v8::Context> ctx){
+    v8::Isolate* iso = ctx->GetIsolate();
+    if (!fuzz::precompiled::EnsureFn(iso, ctx, kSrc, g_fn)) return;
+    v8::Local<v8::Function> fn = g_fn.Get(iso);
 
-readable.push({0});
-readable.push(null);
+    v8::Local<v8::String> s;
+    if (!fuzz::precompiled::NewUtf8String(iso, chunk, &s)) return;
 
-(async () => {
-  for await (const c of readable) { c.toString(); }
-})().catch(() => {});
-)";
-
-  const std::string js = FormatJs(kTemplate, ToSingleQuotedJsLiteral(chunk));
-
-  fuzz::IsolateScope iso; if (!iso.ok()) return 0;
-  fuzz::EnvRunOptions opts;
-  opts.max_pumps = 4;
-  fuzz::RunEnvString(iso.isolate(), js.c_str(), opts);
+    v8::Local<v8::Value> argv[1] = { s };
+    fuzz::precompiled::CallNoThrow(iso, ctx, fn, 1, argv);
+  });
   return 0;
 }
