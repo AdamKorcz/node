@@ -35,12 +35,13 @@ using ABAUnique =
 
 static std::unordered_map<v8::Isolate*, ABAUnique> g_isolate_allocators;
 
-// Thread-local pointer to the *current* libuv loop (owned by IsolateScope).
-// This lets Runtime::loop() keep the same signature while we swap per-iter loops.
+// Per-iteration libuv loop (ownership lives in this TU), while Runtime::loop()
+// returns a raw pointer (ABI compatibility with your header).
+static thread_local std::unique_ptr<uv_loop_t> t_loop_owner;
 static thread_local uv_loop_t* t_loop = nullptr;
 
-// Helper: run Node platform tasks + libuv + microtasks for a bounded number
-// of iterations. Returns true if any progress was made.
+// Helper: run Node platform tasks + libuv + microtasks once.
+// Returns true if any progress was made.
 static inline bool OnePump(v8::Isolate* isolate,
                            node::NodePlatform* platform,
                            uv_loop_t* loop) {
@@ -105,12 +106,13 @@ node::ArrayBufferAllocator* Runtime::allocator() { return g_allocator.get(); }
 IsolateScope::IsolateScope() {
   // Create a fresh libuv loop *per iteration* so libuv’s internal arrays
   // don’t accumulate capacity across runs.
-  loop_ = std::make_unique<uv_loop_t>();
-  if (uv_loop_init(loop_.get()) != 0) {
-    loop_.reset();
+  t_loop_owner = std::make_unique<uv_loop_t>();
+  if (uv_loop_init(t_loop_owner.get()) != 0) {
+    t_loop_owner.reset();
+    t_loop = nullptr;
     return;
   }
-  t_loop = loop_.get();
+  t_loop = t_loop_owner.get();
 
   // Create a fresh ArrayBuffer allocator for this isolate so buffers/pages
   // can be released back to the OS when the isolate dies.
@@ -128,57 +130,50 @@ IsolateScope::IsolateScope() {
     isolate_->Enter();
   } else {
     // If we failed to create an isolate, clean up the loop.
-    uv_loop_close(loop_.get());
-    loop_.reset();
+    uv_loop_close(t_loop_owner.get());
+    t_loop_owner.reset();
     t_loop = nullptr;
   }
 }
 
 IsolateScope::~IsolateScope() {
-  if (!isolate_) {
-    if (loop_) {
-      uv_loop_close(loop_.get());
-      loop_.reset();
-      t_loop = nullptr;
-    }
-    return;
+  // The Environment should already be torn down by the caller (Run* functions).
+  if (isolate_) {
+    auto* platform = Runtime::Get().platform();
+
+    // Drain any pending foreground tasks, leave, then dispose via the platform
+    // so its per-isolate queues and bookkeeping are freed correctly.
+    platform->DrainTasks(isolate_);
+    isolate_->Exit();
+    platform->DisposeIsolate(isolate_);
+
+    // Drop the per-isolate allocator (returns backing pages to the OS).
+    g_isolate_allocators.erase(isolate_);
+
+    isolate_ = nullptr;
   }
 
-  auto* platform = Runtime::Get().platform();
+  if (t_loop_owner) {
+    // We expect the loop to be idle now; close it and free its internal arrays.
+    int rc = uv_loop_close(t_loop_owner.get());
+    if (rc != 0) {
+      // Try to make progress without an isolate (libuv-only).
+      for (int i = 0; i < 256 && uv_loop_alive(t_loop_owner.get()); ++i) {
+        uv_run(t_loop_owner.get(), UV_RUN_NOWAIT);
+      }
+      rc = uv_loop_close(t_loop_owner.get());
+    }
+    // In fuzzing we prefer to be assertive; if needed, relax this.
+    assert(rc == 0 && "uv_loop_close failed: some handles still alive");
 
-  // Drain any pending foreground tasks, leave, then dispose via the platform
-  // so its per-isolate queues and bookkeeping are freed correctly.
-  platform->DrainTasks(isolate_);
-  isolate_->Exit();
-  platform->DisposeIsolate(isolate_);
-
-  // Drop the per-isolate allocator (returns backing pages to the OS).
-  g_isolate_allocators.erase(isolate_);
-
-  isolate_ = nullptr;
-
-  // We expect the loop to be idle now; close it and free its internal arrays.
-  // If this ever asserts, it means something kept handles alive too long.
-  int close_rc = uv_loop_close(loop_.get());
-  (void)close_rc;
-  // In fuzzing we prefer to be assertive; if needed, relax this to a drain+close.
-  assert(close_rc == 0 && "uv_loop_close failed: some handles still alive");
-
-  loop_.reset();
-  t_loop = nullptr;
+    t_loop_owner.reset();
+    t_loop = nullptr;
+  }
 
 #if defined(__GLIBC__)
   // Help the system RSS keep up with freed memory between iterations.
   malloc_trim(0);
 #endif
-}
-
-bool IsolateScope::ok() const {
-  return isolate_ != nullptr && loop_ != nullptr;
-}
-
-v8::Isolate* IsolateScope::isolate() const {
-  return isolate_;
 }
 
 // ---------- RunInEnvironment ----------
@@ -294,7 +289,7 @@ extern "C" int LLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) {
   cppgc::InitializeProcess(g_platform->GetPageAllocator());
   v8::V8::Initialize();
 
-  // NOTE: libuv loop is now per-iteration (owned by IsolateScope), so we do
+  // Note: libuv loop is now per-iteration (owned by IsolateScope), so we do
   // not initialize a process-wide loop here.
 
   // We also no longer pre-create a process-wide ArrayBuffer allocator. Each
