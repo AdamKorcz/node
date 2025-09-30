@@ -44,6 +44,7 @@ v8::Global<v8::Function>             g_bufcmp_fn;
 
 // Helper: run platform tasks + libuv + microtasks once.
 // Returns true if any progress was made.
+// NOTE: Callers must have entered the isolate (Isolate::Scope) before calling.
 static inline bool OnePump(v8::Isolate* isolate,
                            node::NodePlatform* platform,
                            uv_loop_t* loop) {
@@ -55,10 +56,13 @@ static inline bool OnePump(v8::Isolate* isolate,
 }
 
 // Drain up to max_spins or until the loop is idle.
+// Enters the isolate to satisfy V8 invariants while touching microtasks/heap.
 static inline void DrainUntilIdle(v8::Isolate* isolate,
                                   node::NodePlatform* platform,
                                   uv_loop_t* loop,
                                   int max_spins = 256) {
+  v8::Isolate::Scope iso_scope(isolate);
+  v8::HandleScope hs(isolate);
   for (int i = 0; i < max_spins; ++i) {
     const bool progressed = OnePump(isolate, platform, loop);
     if (!progressed && !uv_loop_alive(loop)) break;
@@ -68,6 +72,7 @@ static inline void DrainUntilIdle(v8::Isolate* isolate,
 static void BuildBufCmpOnce() {
   if (!g_bufcmp_fn.IsEmpty()) return;
 
+  v8::Isolate::Scope iso_scope(g_iso);
   v8::HandleScope hs(g_iso);
   v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
   v8::Context::Scope cs(ctx);
@@ -97,8 +102,8 @@ static void BuildBufCmpOnce() {
 }
 
 void GlobalShutdown() {
-  // Cleanly stop the persistent Environment if it exists.
   if (g_env != nullptr) {
+    v8::Isolate::Scope iso_scope(g_iso);
     v8::HandleScope hs(g_iso);
     v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
     v8::Context::Scope cs(ctx);
@@ -249,6 +254,7 @@ void RunEnvString(v8::Isolate* /*unused*/,
                   const EnvRunOptions& /*opts*/) {
   InitializePersistentEnvOnce();
 
+  v8::Isolate::Scope iso_scope(g_iso);
   v8::HandleScope hs(g_iso);
   v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
   v8::Context::Scope cs(ctx);
@@ -273,6 +279,7 @@ void RunInEnvironment(v8::Isolate* /*unused*/,
                       const EnvRunOptions& /*opts*/) {
   InitializePersistentEnvOnce();
 
+  v8::Isolate::Scope iso_scope(g_iso);
   v8::HandleScope hs(g_iso);
   v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
   v8::Context::Scope cs(ctx);
@@ -287,6 +294,7 @@ void RunBufCompare(const uint8_t* a, size_t alen,
                    const uint8_t* b, size_t blen) {
   InitializePersistentEnvOnce();
 
+  v8::Isolate::Scope iso_scope(g_iso);
   v8::HandleScope hs(g_iso);
   v8::Local<v8::Context> ctx = g_ctx.Get(g_iso);
   v8::Context::Scope cs(ctx);
