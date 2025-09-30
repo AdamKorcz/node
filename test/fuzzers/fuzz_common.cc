@@ -196,10 +196,62 @@ static void InitializePersistentEnvOnce() {
 
 }  // namespace
 
-// ------------------------- Public helpers (unchanged API) -------------------------
+// ------------------------- Runtime (header-compatible) -------------------------
 
-// If you still call RunEnvString elsewhere, we can route it through the
-// persistent environment to avoid per-iter bootstrapping.
+Runtime& Runtime::Get() {
+  static Runtime rt;
+  return rt;
+}
+
+uv_loop_t* Runtime::loop() {
+  // Our persistent loop; ensure initialized so callers can safely use it.
+  InitializePersistentEnvOnce();
+  return &g_persist_loop;
+}
+
+node::NodePlatform* Runtime::platform() {
+  InitializePersistentEnvOnce();
+  return g_platform.get();
+}
+
+node::ArrayBufferAllocator* Runtime::allocator() {
+  // Kept for API compatibility; we use the persistent allocator.
+  InitializePersistentEnvOnce();
+  return g_persist_allocator.get();
+}
+
+// ------------------------ IsolateScope (lightweight façade) --------------------
+
+IsolateScope::IsolateScope() {
+  // Ensure persistent env/isolate exist, then "enter" the isolate so code that
+  // expects an entered isolate continues to work. This does NOT own the isolate.
+  InitializePersistentEnvOnce();
+  isolate_ = g_iso;
+  if (isolate_) isolate_->Enter();
+}
+
+IsolateScope::~IsolateScope() {
+  if (!isolate_) return;
+  // Leave the isolate; do NOT dispose it (persistent env owns it).
+  isolate_->Exit();
+  isolate_ = nullptr;
+
+#if defined(__GLIBC__)
+  // Keep RSS in check during long runs.
+  malloc_trim(0);
+#endif
+}
+
+bool IsolateScope::ok() const {
+  return isolate_ != nullptr;
+}
+
+v8::Isolate* IsolateScope::isolate() const {
+  return isolate_;
+}
+
+// ----------------------- Public helpers (persistent env) -----------------------
+
 void RunEnvString(v8::Isolate* /*unused*/,
                   const char* env_js,
                   const EnvRunOptions& /*opts*/) {
@@ -224,8 +276,6 @@ void RunEnvString(v8::Isolate* /*unused*/,
   DrainUntilIdle(g_iso, g_platform.get(), &g_persist_loop);
 }
 
-// Optional: keep RunInEnvironment available for other fuzzers. We route it
-// through the persistent env as well. The callback still gets the Environment.
 void RunInEnvironment(v8::Isolate* /*unused*/,
                       EnvCallback cb,
                       const EnvRunOptions& /*opts*/) {

@@ -5,7 +5,7 @@
 // You can still include your common header for other helpers/types.
 #include "fuzz_common.h"
 
-// Forward declare the new entry we expose from fuzz_common.cc.
+// Forward declare the new fast-path we expose from fuzz_common.cc.
 namespace fuzz {
 void RunBufCompare(const uint8_t* a, size_t alen,
                    const uint8_t* b, size_t blen);
