@@ -2,27 +2,23 @@
 #include <string>
 #include "fuzzer/FuzzedDataProvider.h"
 
+// You can still include your common header for other helpers/types.
 #include "fuzz_common.h"
-#include "fuzz_js_format.h"
+
+// Forward declare the new entry we expose from fuzz_common.cc.
+namespace fuzz {
+void RunBufCompare(const uint8_t* a, size_t alen,
+                   const uint8_t* b, size_t blen);
+}
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider p(data, size);
+
+  // Keep the input shape similar to your original harness: two short strings.
   std::string s1 = p.ConsumeRandomLengthString(64);
   std::string s2 = p.ConsumeRandomLengthString(64);
 
-  static constexpr std::string_view kTemplate = R"(
-const buffer1 = Buffer.from({0});
-const buffer2 = Buffer.from({1});
-const _ = Buffer.compare(buffer1, buffer2);
-)";
-
-  const std::string js = FormatJs(
-      kTemplate,
-      ToSingleQuotedJsLiteral(s1),
-      ToSingleQuotedJsLiteral(s2));
-
-  fuzz::IsolateScope iso;
-  if (!iso.ok()) return 0;
-  fuzz::RunEnvString(iso.isolate(), js.c_str());
+  fuzz::RunBufCompare(reinterpret_cast<const uint8_t*>(s1.data()), s1.size(),
+                      reinterpret_cast<const uint8_t*>(s2.data()), s2.size());
   return 0;
 }
