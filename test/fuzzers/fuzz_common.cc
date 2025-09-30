@@ -319,7 +319,8 @@ void RunBufCompare(const uint8_t* a, size_t alen,
   // Periodically help the allocator return memory to the OS.
   static uint64_t iter = 0;
   if ((++iter & 0xFF) == 0) {  // every 256 iters
-    g_iso->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
+    // Use a production-safe GC request; no --expose-gc required.
+    g_iso->LowMemoryNotification();
   #if defined(__GLIBC__)
     malloc_trim(0);
   #endif
